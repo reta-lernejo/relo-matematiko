@@ -1,6 +1,6 @@
 ---
 layout: laborfolio
-title: Logiko 4 - Deduktsistemoj
+title: 4 - Deduktsistemoj
 js-ext: mathjax3
 ---
 

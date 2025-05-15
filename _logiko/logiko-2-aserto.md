@@ -1,6 +1,6 @@
 ---
 layout: laborfolio
-title: Logiko 2 - Aserta kalkulsistemo
+title: 2 - Aserta kalkulsistemo
 js-ext: mathjax3
 ---
 

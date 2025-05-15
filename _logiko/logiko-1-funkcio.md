@@ -1,6 +1,6 @@
 ---
 layout: laborfolio
-title: Logiko 1 - Logikaj funkcioj
+title: 1 - Logikaj funkcioj
 js:
   - folio-0c
 js-ext: mathjax3

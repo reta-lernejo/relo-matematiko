@@ -1,6 +1,6 @@
 ---
 layout: laborfolio
-title: Logiko 3 - Predikata kalkulsistemo
+title: 3 - Predikata kalkulsistemo
 js-ext: mathjax3
 ---
 
