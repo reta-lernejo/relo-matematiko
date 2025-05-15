@@ -134,15 +134,46 @@ class Krado {
         this.g = Lk.e("g",{
             id: id,
             class: klaso
-        });        
+        });    
+        
+        const r = Lk.e("rect",{
+            height: 100,
+            width: 100,
+            rx: 10,
+            fill: "#dde",
+            "stroke-width": 0.5,
+            stroke: "gray"
+        });
+        this.g.append(r)
     }
 
-    relajso(x,y) {
+    nomo(nom) {
+        const t = Lk.e("text",{
+            x: 10,
+            y: 15,
+        },nom);
+        this.g.append(t);
+    }
+
+    relajso(x,y,e) {
         this.x = x;
         this.y = y;
 
+        const t = Lk.e("text",{
+            x: x+3,
+            y: y+10,
+            "font-size": 10
+        },e);
+        const c = Lk.e("circle",{
+            class: "kontakto",
+            cx: x+3,
+            cy: y,
+            r: 2,
+            fill: "none",
+            stroke:"black"
+        });
         const r = Lk.e("rect",{
-            x: x+30,
+            x: x+20,
             y: y+10,
             width: 20,
             height: 15,
@@ -150,12 +181,72 @@ class Krado {
             stroke: "black"
         });
         const p = Lk.e("path",{
-           d: "M5 3L40 3L40 10M40 25L40 35M36 35L44 35",
+           d: "M5 0L30 0L30 10M30 25L30 35M26 35L34 35",
            fill: "none",
            stroke: "black",
            transform: `translate(${x} ${y})`
         }); 
-        this.g.append(r,p);
+        this.g.append(t,c,r,p);
+    }
+
+    // ŝaltilo de la relajso
+    ponto(x,y,w,fermita) {
+        const ys = y+17.5;
+        const xw = x+w;
+        const fend = 1+5*(1-fermita);
+        // strekita
+         const p = Lk.e("path",{
+             fill: "none",
+             stroke: "black",
+             "stroke-dasharray": "5,2",
+             d: `M${x+40} ${ys}L${xw-fend} ${ys}`
+         });
+         // klapo
+         const p1 = Lk.e("path",{
+             class: "klapo",
+             fill: "none",
+             stroke: "black",
+             d: `M${xw-fend} ${y+9}L${xw} ${y+25}`
+         });
+         const l = Lk.e("line",{
+            x1: xw+.5,
+            x2: xw-2,
+            y1: y+10,
+            y2: y+10,
+            fill: "none",
+            stroke: "black",
+        });
+         const c = Lk.e("circle",{
+            cx: xw,
+            cy: y+25,
+            r: 1
+         });
+         this.g.append(p,p1,l,c);
+    }    
+
+    eliro(x=90,y1=10,y2=70) {
+        const p = Lk.e("path",{
+            fill: "none",
+            stroke: "black",
+            d: `M96 ${y1}L${x} ${y1}L${x} ${y2}L96 ${y2}M${x} ${y2}L${x} 95`
+        });
+        const c1 = Lk.e("circle",{
+            class: "kontakto",
+            cx: 98,
+            cy: y1,
+            r: 2,
+            fill: "none",
+            stroke:"black"
+        });        
+        const c2 = Lk.e("circle",{
+            class: "kontakto",
+            cx: 98,
+            cy: y2,
+            r: 2,
+            fill: "none",
+            stroke:"black"
+        });        
+        this.g.append(p,c1,c2);
     }
 
     vdrato(x,y,l) {
@@ -177,6 +268,7 @@ class Krado {
         this.g.append(p);
     }
 
+    /*
     kontakto(N,x,y) {
         const t = Lk.e("text",{
             x: x+3,
@@ -191,7 +283,7 @@ class Krado {
             stroke:"black"
         });
         this.g.append(c,t);
-    }
+    }*/
 
     poluso(x,y) {
         const c = Lk.e("circle",{
@@ -210,41 +302,26 @@ class Krado {
         this.g.append(c,p);
     }
 
-    ponto(x,y,w,fermita) {
-       // strekita
-        const p = Lk.e("path",{
-            fill: "none",
-            stroke: "black",
-            "stroke-dasharray": "5,2",
-            d: `M${x+50} ${y+17.5}L${x+w-5*(1-fermita)} ${y+17.5}`
-        });
-        // klapo
-        const p1 = Lk.e("path",{
-            class: "klapo",
-            fill: "none",
-            stroke: "black",
-            d: `M${x+w-5*(1-fermita)} ${y+10}L${x+w} ${y+25}`
-        });
-        this.g.append(p,p1);
-    }
 }
 
 
 class NEKrado extends Krado {
     constructor(id) {
         super(id);
+        this.nomo("NE");
+        this.eliro();
 
         // relajso
-        this.relajso(0,20);
-        this.kontakto('x',3,23);        
-        this.ponto(0,20,80,true);
+        this.relajso(0,20,'x');
+        this.ponto(0,20,75,true);
 
-        this.poluso(80,5);
-        this.vdrato(80,9,21);
-        this.vdrato(80,45,51.5);
+        this.poluso(75,7);
+        this.vdrato(75,11,19);
+        this.vdrato(75,45,50);
 
-        this.hdrato(80,96,16);
-        this.kontakto('',98,96);
+        this.hdrato(75,95,15);
+        //this.vdrato(90,10,90);
+        //this.kontakto('',98,96);
     };
 }
 
@@ -252,26 +329,167 @@ class NEKrado extends Krado {
 class KAJKrado extends Krado {
     constructor(id) {
         super(id);
+        this.nomo("KAJ");
+        this.eliro();
 
         // relajso 1
-        this.relajso(0,20);
-        this.kontakto('x',3,23);        
-        this.ponto(0,20,80,false);
+        this.relajso(0,20,'x');
+        this.ponto(0,20,75,false);
 
         // relajso 2
-        this.relajso(0,60);
-        this.kontakto('y',3,63);        
-        this.ponto(0,60,80,false);
+        this.relajso(0,60,'y');
+        this.ponto(0,60,75,false);
 
-        this.poluso(80,5);
-        this.vdrato(80,9,19);
-        this.vdrato(80,45,24);
-        this.vdrato(80,85,11.5);
+        this.poluso(75,7);
+        this.vdrato(75,11,19);
+        this.vdrato(75,45,25);
+        this.vdrato(75,85,10);
 
-        this.hdrato(80,96,16);
-        this.kontakto('',98,96);
+        this.hdrato(75,95,15);
+        //this.kontakto('',98,96);
     };
 }
 
 
+class NKAJKrado extends Krado {
+    constructor(id) {
+        super(id);
+        this.nomo("NKAJ");
+        this.eliro();
+
+        // relajso 1
+        this.relajso(0,20,'x');
+        this.ponto(0,20,60,true);
+
+        // relajso 2
+        this.relajso(0,60,'y');
+        this.ponto(0,60,75,true);
+
+        this.poluso(60,7);
+        this.vdrato(60,11,19);
+        this.vdrato(60,45,50);
+
+        this.poluso(75,7);
+        this.vdrato(75,11,59);
+        this.vdrato(75,85,10);
+
+        this.hdrato(60,95,30);
+        //this.kontakto('',98,96);
+    }
+}
+
+class AŬKrado extends Krado {
+    constructor(id) {
+        super(id);
+        this.nomo("AŬ");
+        this.eliro();
+
+        // relajso 1
+        this.relajso(0,20,'x');
+        this.ponto(0,20,60,false);
+
+        // relajso 2
+        this.relajso(0,60,'y');
+        this.ponto(0,60,75,false);
+
+        this.poluso(60,7);
+        this.vdrato(60,11,19);
+        this.vdrato(60,45,50);
+
+        this.poluso(75,7);
+        this.vdrato(75,11,59);
+        this.vdrato(75,85,10);
+
+        this.hdrato(60,95,30);
+        //this.kontakto('',98,96);
+    }
+}
+
+
+class NEKKrado extends Krado {
+    constructor(id) {
+        super(id);
+        this.nomo("NEK");
+        this.eliro();
+
+        // relajso 1
+        this.relajso(0,20,'x');
+        this.ponto(0,20,75,true);
+
+        // relajso 2
+        this.relajso(0,60,'y');
+        this.ponto(0,60,75,true);
+
+        this.poluso(75,7);
+        this.vdrato(75,11,19);
+        this.vdrato(75,45,25);
+        this.vdrato(75,85,10);
+
+        this.hdrato(75,95,15);
+        //this.kontakto('',98,96);
+    };
+}
+
+
+class EKVKrado extends Krado {
+    constructor(id) {
+        super(id);
+        this.nomo("EKV");
+        this.eliro();
+
+        // relajso 1
+        this.relajso(0,20,'x');
+        this.ponto(0,20,60,false);
+        this.ponto(0,20,75,true);
+
+        // relajso 2
+        this.relajso(0,60,'y');
+        this.ponto(0,60,60,true);
+        this.ponto(0,60,75,false);
+
+        this.poluso(60,7);
+        this.vdrato(60,11,19);
+        this.vdrato(60,45,25);
+        this.vdrato(60,85,10);
+
+        this.poluso(75,7);
+        this.vdrato(75,11,19);
+        this.vdrato(75,45,25);
+        this.vdrato(75,85,10);
+
+        this.hdrato(60,95,30);
+        //this.kontakto('',98,96);
+    }
+}
+
+class XAŬKrado extends Krado {
+    constructor(id) {
+        super(id);
+        this.nomo("XAŬ");
+        this.eliro();
+
+        // relajso 1
+        this.relajso(0,20,'x');
+        this.ponto(0,20,60,true);
+        this.ponto(0,20,75,false);
+
+        // relajso 2
+        this.relajso(0,60,'y');
+        this.ponto(0,60,60,false);
+        this.ponto(0,60,75,true);
+
+        this.poluso(60,7);
+        this.vdrato(60,11,19);
+        this.vdrato(60,45,25);
+        this.vdrato(60,85,10);
+
+        this.poluso(75,7);
+        this.vdrato(75,11,19);
+        this.vdrato(75,45,25);
+        this.vdrato(75,85,10);
+
+        this.hdrato(60,95,30);
+        //this.kontakto('',98,96);
+    }
+}
 
