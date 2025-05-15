@@ -39,55 +39,55 @@ https://de.wikipedia.org/wiki/Logikgatter
 
 // unuargumentaj logikaj funkcioj
 const lf1 = {
-  nul: () => 0,
-  unu: () => 1,
-  id:  (x) => x,
-  ne:  (x) => Number(!x)
+  NUL: () => 0,
+  UNU: () => 1,
+  ID:  (x) => x,
+  NE:  (x) => Number(!x)
 };
 const lf1_dok = {
-  nul: 'f1_nul_unu',
-  unu: 'f1_nul_unu',
-  id:  'f1_id',
-  ne:  'f1_ne'
+  NUL: 'f1_nul_unu',
+  UNU: 'f1_nul_unu',
+  ID:  'f1_id',
+  NE:  'f1_ne'
 };
 
 // duargumentaj logikaj funkcioj
 const lf2 = {
-  nul: () => 0,
-  unu: () => 1, // T (taŭtologio)
-  idx: (x) => x, // x
-  idy: (x,y) => y, // y
-  nex: (x) => Number(!x), // NOTx
-  ney: (x,y) => Number(!y), //NOTy
-  spx: (x,y) => Number(x&&!y), // y subpremas x
-  spy: (x,y) => Number(!x&&y), // x subpremas y
-  kaj: (x,y) => x&&y, // AND
-  aŭ: (x,y) => x||y, // OR
-  disaŭ: (x,y) => x^y, // XOR x!= y
-  impl: (x,y) => Number(!(y==0&&x==1)),
-  repl: (x,y) => Number(!(y==1&&x==0)),
-  ekv: (x,y) => Number(x==y), //XNOR | NXOR
-  nek: (x,y) => Number(!(x||y)), // NOR
-  malkaj: (x,y) => Number(!(x&&y)) // NAND
+  NUL: () => 0,
+  UNU: () => 1, // T (taŭtologio)
+  IDX: (x) => x, // x
+  IDY: (x,y) => y, // y
+  NEX: (x) => Number(!x), // NOTx
+  NEY: (x,y) => Number(!y), //NOTy
+  SPX: (x,y) => Number(x&&!y), // y subpremas x
+  SPY: (x,y) => Number(!x&&y), // x subpremas y
+  KAJ: (x,y) => x&&y, // AND
+  AŬ: (x,y) => x||y, // OR
+  XAŬ: (x,y) => x^y, // XOR x!= y
+  IMPL: (x,y) => Number(!(y==0&&x==1)),
+  REPL: (x,y) => Number(!(y==1&&x==0)),
+  EKV: (x,y) => Number(x==y), //XNOR | NXOR
+  NEK: (x,y) => Number(!(x||y)), // NOR
+  NKAJ: (x,y) => Number(!(x&&y)) // NAND
 }
 
 const lf2_dok = {
-  nul: 'f2_nul_unu',
-  unu: 'f2_nul_unu',
-  idx: 'f2_idx_idy',
-  idy: 'f2_idx_idy',
-  nex: 'f2_nex_ney',
-  ney: 'f2_nex_ney',
-  spx: 'f2_spx_spy',
-  spy: 'f2_spx_spy',
-  kaj: 'f2_kaj_malkaj',
-  aŭ: 'f2_au_nek',
-  disaŭ: 'f2_ekv_disau',
-  impl: 'f2_impl_repl',
-  repl: 'f2_impl_repl',
-  ekv: 'f2_ekv_disau',
-  nek: 'f2_au_nek',
-  malkaj: 'f2_kaj_malkaj',
+  NUL: 'f2_nul_unu',
+  UNU: 'f2_nul_unu',
+  IDx: 'f2_idx_idy',
+  IDy: 'f2_idx_idy',
+  NEx: 'f2_nex_ney',
+  NEy: 'f2_nex_ney',
+  SPx: 'f2_spx_spy',
+  SPy: 'f2_spx_spy',
+  KAJ: 'f2_kaj_malkaj',
+  AŬ: 'f2_au_nek',
+  XAŬ: 'f2_ekv_disau',
+  IMPL: 'f2_impl_repl',
+  REPL: 'f2_impl_repl',
+  EKV: 'f2_ekv_disau',
+  NEK: 'f2_au_nek',
+  NKAJ: 'f2_kaj_malkaj',
 }
 
 butone((ago) => {
@@ -155,23 +155,23 @@ Mi tie ĉi notis informojn pri nocioj, kiujn mi iam devis lerni por ekzameno.
 
 En la klasika logiko oni laboras nur per du diversaj valoroj: *vera* kaj *malvera*, aŭ 0 kaj 1.
 Logikaj funkcioj bildigas variablojn, kiuj havas unu el du valoroj, al tiuj du valoroj denove.
-Ekzemple `ne` estas unuargumenta logika funkcio, kiu bildigas 0 al 1 kaj 1 al 0,
+Ekzemple `NE` estas unuargumenta logika funkcio, kiu bildigas 0 al 1 kaj 1 al 0,
 oni ĝin signas per superstreketo: $$ \overline{0}=1 $$. Duargumentaj, logikaj
-funkcioj estas `kaj` kaj `aŭ`.
+funkcioj estas `KAJ` kaj `AŬ`.
 
 Ekzistas kvar unu-argumentaj logikaj funkcioj:
 
-[nul][unu][id][ne]
+[NUL] [UNU] [ID] [NE]
 {: .butonoj #lf1}
 
-{: #f1_nul_unu}`nul` kaj `unu`
-: La funkcioj `nul` kaj `unu` ignoras la argumenton kaj ĉiam rezultas en 0 (malvera) respektive 1 (vera). Do efektive ili povas esti konsiderataj kiel senargumentaj funkcioj. Cetere oni nomas esprimon, kiu ĉiam estas malvera *kontraŭdiro* ($$\bot$$). Esprimon ĉiam veran oni ankaŭ nomas *taŭtologio* ($$\top$$).
+{: #f1_nul_unu}`NUL` kaj `UNU`
+: La funkcioj `NUL` kaj `UNU` ignoras la argumenton kaj ĉiam rezultas en 0 (malvera) respektive 1 (vera). Do efektive ili povas esti konsiderataj kiel senargumentaj funkcioj. Cetere oni nomas esprimon, kiu ĉiam estas malvera *kontraŭdiro* ($$\bot$$). Esprimon ĉiam veran oni ankaŭ nomas *taŭtologio* ($$\top$$).
 
-{: #f1_id}`id`
-: La funkcio `id` (idento) ĉiam redonas la argumenton senŝanĝe.
+{: #f1_id}`ID`
+: La funkcio `ID` (idento) ĉiam redonas la argumenton senŝanĝe.
 
-{: #f1_ne}`ne`
-: La funkcio `ne` - neg(aci)o, ĉiam redonas la kontraŭon de la argumento. Oni povas signi ĝin per $$\lnot$$, sed ni ĉi tie uzas alternative la superstrekon, kiu koncizigas esprimon kun pluraj aplikaj de funkcio `ne`. En programlingvo oni povas realigi ĝin per `(x) => !x ` aŭ per `(x) => 1-x`.
+{: #f1_ne}`NE`
+: La funkcio `NE` - neg(aci)o, ĉiam redonas la kontraŭon de la argumento. Oni povas signi ĝin per $$\lnot$$, sed ni ĉi tie uzas alternative la superstrekon, kiu koncizigas esprimon kun pluraj aplikaj de funkcio `NE`. En programlingvo oni povas realigi ĝin per `(x) => !x ` aŭ per `(x) => 1-x`.
 
 |x|f(x)|
 |-|-|
@@ -179,56 +179,40 @@ Ekzistas kvar unu-argumentaj logikaj funkcioj:
 |1||
 {: #tabelo1 style="width:min-content"}
 
-<!--
-Montru unu- kaj duargumentajn logikfunkciojn per tabeloj:
-1-argumentaj [nul] [unu] [id] [ne]
-
-2-argumentoj 
-  [nul-0] [kaj-AND] 
-  [kajne] [id1] 
-  [nekaj] [id2] 
-  [disaŭ-XOR] [aŭ-OR] 
-  [malaŭ-NOR] [maldisaŭ-XNOR]
-  [ne2] [repl?]
-  [ne1] [impl]
-  [malkaj-NAND] [unu-T]
-
-vd. ankaŭ https://de.wikipedia.org/wiki/Boolesche_Funktion
--->
 
 Entute ekzistas 16 diversaj du-argumentaj logikaj funkcioj, jen elekto:
 
-[nul] [unu] [idx] [nex] [idy] [ney] [spx] [spy] [kaj] [malkaj] [aŭ] [nek] [impl] [repl] [ekv] [disaŭ]
+[NUL] [UNU] [IDx] [NEx] [IDy] [NEy] [SPx] [SPy] [KAJ] [NKAJ] [AŬ] [NEK] [IMPL] [REPL] [EKV] [XAŬ]
 {: .butonoj #lf2}
 
-{: #f2_nul_unu}`nul` kaj `unu`
-: La duargumentaj funkcioj `nul` (kontraŭdiro) kaj `unu` (taŭtologio) ne dependas de siaj argumentoj. Ni jam pritraktis ilin sub la unuargumentaj. Ili aperas tie ĉi pro kompleteco.
+{: #f2_nul_unu}`NUL` kaj `UNU`
+: La duargumentaj funkcioj `NUL` (kontraŭdiro) kaj `UNU` (taŭtologio) ne dependas de siaj argumentoj. Ni jam pritraktis ilin sub la unuargumentaj. Ili aperas tie ĉi pro kompleteco.
 
-{: #f2_idx_idy}`idx` kaj `idy`
-: La idento-funkcioj `idx` kaj `idy` ignoras unu el siaj argumentoj kaj funkcias kiel unuargumenta idento sur la argumento x respektive y.
+{: #f2_idx_idy}`IDx` kaj `IDy`
+: La idento-funkcioj `IDx` kaj `IDy` ignoras unu el siaj argumentoj kaj funkcias kiel unuargumenta idento sur la argumento x respektive y.
 
-{: #f2_nex_ney}`nex` kaj `ney`
-: La neaj funkcioj `nex` ($$\overline{x}$$) kaj `ney` ($$\overline{y}$$) ignoras unu el siaj argumentoj kaj funkcias kiel unuargumenta negacio sur la argumento x respektive y.
+{: #f2_nex_ney}`NEx` kaj `NEy`
+: La neaj funkcioj `NEx` ($$\overline{x}$$) kaj `NEy` ($$\overline{y}$$) ignoras unu el siaj argumentoj kaj funkcias kiel unuargumenta negacio sur la argumento x respektive y.
 
-{: #f2_spx_spy}`spx` kaj `spy`
-: Ĉe la funkcio `spx` (subpremo de x, alinome inhib(ici)o de x), la argumento y, se vera, subpremas, t.e. nuligas, malverigas, la valoron de x. La funkcio `spy` (subpremo de y) inversigas la rolon de ambaŭ argumentoj. En programlingvo oni povas realigi `spx` per `(x,y) => x && !y` aŭ per `(x,y) => x > y`.
+{: #f2_spx_spy}`SPx` kaj `SPy`
+: Ĉe la funkcio `SPx` (subpremo de x, alinome inhib(ici)o de x), la argumento y, se vera, subpremas, t.e. nuligas, malverigas, la valoron de x. La funkcio `SPy` (subpremo de y) inversigas la rolon de ambaŭ argumentoj. En programlingvo oni povas realigi `SPx` per `(x,y) => x && !y` aŭ per `(x,y) => x > y`.
 
-{: #f2_kaj_malkaj}`kaj` kaj `malkaj`
-: La funkcio `kaj` (konjunkcio, AND) estas vera nur, se ambaŭ argumentoj estas veraj. Ni simboligas ĝin per la kutima signo $$\land$$. En programlingvo oni povas realigi ĝin per `(x,y) => x && y` aŭ per `(x,y) =>  x*y`. 
-: La funkcio `malkaj` (ekskludo, ankaŭ NAND aŭ Ŝeferfunkcio laŭ *Henry Maurice Sheffer*) estas ĉiam vera, krom se ambaŭ argumentoj estas veraj. Alivorte ĝi estas la negacio de `kaj`. Oni povas simboligi ĝin per $$x\mid y$$ aŭ $$x\barwedge y$$. En programlingvo oni povas realigi ĝin per `(x,y) => ! (x && y)` aŭ `(x,y) =>  1 - x*y`.
+{: #f2_kaj_malkaj}`KAJ` kaj `NKAJ`
+: La funkcio `KAJ` (konjunkcio, AND) estas vera nur, se ambaŭ argumentoj estas veraj. Ni simboligas ĝin per la kutima signo $$\land$$. En programlingvo oni povas realigi ĝin per `(x,y) => x && y` aŭ per `(x,y) =>  x*y`. 
+: La funkcio `NKAJ` (ekskludo, malkaj, ankaŭ NAND aŭ Ŝeferfunkcio laŭ *Henry Maurice Sheffer*) estas ĉiam vera, krom se ambaŭ argumentoj estas veraj. Alivorte ĝi estas la negacio de `KAJ`. Oni povas simboligi ĝin per $$x\mid y$$ aŭ $$x\barwedge y$$. En programlingvo oni povas realigi ĝin per `(x,y) => ! (x && y)` aŭ `(x,y) =>  1 - x*y`.
 
-{: #f2_au_nek}`aŭ` kaj `nek`
-: La funkcio `aŭ` (inkluziva disjunkcio, OR) estas vera, se alemanŭ unu el ĝiaj argumentoj estas vera. Ni simboligas ĝin per la kutima signo $$\lor$$. En programlingvo oni povas realigi ĝin per `(x,y) => x || y`, `(x,y) => x+y > 0` aŭ per `(x,y) => x + y - x*y`.
-: La funkcio `nek` (NOR, nihilo, funkcio de Peirce) estas vera nur, se nek x nek y estas veraj. Ĝia simbolo estas $$⊽$$ kaj oni povas programlingve realigi ĝin per `(x,y) => !(x||y)` aŭ `(x,y) => x+y == 0`.
+{: #f2_au_nek}`AŬ` kaj `NEK`
+: La funkcio `AŬ` (inkluziva disjunkcio, OR) estas vera, se alemanŭ unu el ĝiaj argumentoj estas vera. Ni simboligas ĝin per la kutima signo $$\lor$$. En programlingvo oni povas realigi ĝin per `(x,y) => x || y`, `(x,y) => x+y > 0` aŭ per `(x,y) => x + y - x*y`.
+: La funkcio `NEK` (NOR, nihilo, funkcio de Peirce) estas vera nur, se nek x nek y estas veraj. Ĝia simbolo estas $$⊽$$ kaj oni povas programlingve realigi ĝin per `(x,y) => !(x||y)` aŭ `(x,y) => x+y == 0`.
 
-{: #f2_impl_repl}`impl` kaj `repl`
-: La funkcio `impl` (implico) estas malvera nur, se x estas vera, sed y estas malvera: *Se pluvas, mi ĉiam restas hejme*. Oni simboligas ĝin per $$\implies$$ kaj programlingve povas esprimi ĝin per `(x,y) => x<=y`. 
-: La funkcio `repl` (inversa implico, reimplico) estas malvera, se y estas vera, sed ne x: *Nur se estas bela vetero (x), foje mi promenas (y)*. Do x esprimas necesan kondiĉon, por ke y estu vera. Oni uzas la simbolon $$\Leftarrow$$ kaj realigas ĝin en programo ekzemple per `(x,y) => x>=y`.
+{: #f2_impl_repl}`IMPL` kaj `REPL`
+: La funkcio `IMPL` (implico) estas malvera nur, se x estas vera, sed y estas malvera: *Se pluvas, mi ĉiam restas hejme*. Oni simboligas ĝin per $$\implies$$ kaj programlingve povas esprimi ĝin per `(x,y) => x<=y`. 
+: La funkcio `REPL` (inversa implico, reimplico, replikacio) estas malvera, se y estas vera, sed ne x: *Nur se estas bela vetero (x), foje mi promenas (y)*. Do x esprimas necesan kondiĉon, por ke y estu vera. Oni uzas la simbolon $$\Leftarrow$$ kaj realigas ĝin en programo ekzemple per `(x,y) => x>=y`.
 
-{: #f2_ekv_disau}`ekv` kaj `disaŭ`
-: La funkcio `ekv` (XNOR, NXOR, XAND, ekvivalento, duobla implico) estas vera nur, se ambaŭ x kaj y havas la saman valoron. Oni uzas la simbolon $$\iff$$ 
+{: #f2_ekv_disau}`EKV` kaj `XAŬ`
+: La funkcio `EKV` (XNOR, NXOR, XAND, ekvivalento, duobla implico) estas vera nur, se ambaŭ x kaj y havas la saman valoron. Oni uzas la simbolon $$\iff$$ 
 aŭ $$\odot$$ kaj programlingve esprimas ĝin per `(x,y) => x==y`.
-: La funkcio `disaŭ` (ekskluziva disjunkcio, XOR) estas vera, se nur unu el ambaŭ argumento estas vera. Ĝia simbolo estas $$\oplus$$ aŭ $$\veebar$$ kaj oni povas programlingve realigi ĝin per `(x,y) => x^y` aŭ per `(x,y) => x != y`.
+: La funkcio `XAŬ` (ekskluziva disjunkcio, XOR) estas vera, se nur unu el ambaŭ argumento estas vera. Ĝia simbolo estas $$\oplus$$ aŭ $$\veebar$$ kaj oni povas programlingve realigi ĝin per `(x,y) => x^y` aŭ per `(x,y) => x != y`.
 
 
 
@@ -243,7 +227,7 @@ aŭ $$\odot$$ kaj programlingve esprimas ĝin per `(x,y) => x==y`.
 ## Supermetado de funkcioj
 
 Oni per supermetado de logikaj funkcioj povas ricevi novajn. Ekzemple oni povas ricevi la logikan funkcion 
-`kaj` per supermetado de la du funkcioj `ne` kaj `aŭ`: $$ x \lor y = \overline{\overline{x} \land \overline{y}} $$.
+`KAJ` per supermetado de la du funkcioj `NE` kaj `AŬ`: $$ x \lor y = \overline{\overline{x} \land \overline{y}} $$.
 
 <!-- klarigu skribmanierojn \land - similas majusklan A, \lor similas la "u" resp. la hoketon super "ŭ",
 oni povas forlasi \land kaj skribi "ab"; \overline oni povas ankaŭ skribi \lnot, sed tio estas malpli konciza -->
@@ -251,7 +235,7 @@ oni povas forlasi \land kaj skribi "ab"; \overline oni povas ankaŭ skribi \lnot
 ## Bulea Algebro
 
 Ĉiu logika funkcio povas esti reprezentata kiel *bulea termo*,
-tio estas supermetaĵo de la funkcioj `ne`, `kaj` kaj `aŭ`. Validas diversaj leĝoj por tiuj funkcioj:
+tio estas supermetaĵo de la funkcioj `NE`, `KAJ` kaj `AŬ`. Validas diversaj leĝoj por tiuj funkcioj:
 
 komutaj: $$ a \land b = b \land a; a \lor b = b \lor a $$
 
@@ -282,7 +266,7 @@ $$\cup,\cap,C$$ estas la kunigo, intersekco kaj komplemento da aroj. $$F_2^m$$ e
 
 Sistemo de logikaj funkcioj estas *kompleta*, se ĉiu logika funkcio estas reprezentebla 
 per supermetado de la funkcioj el tiu sistemo. Ĉar ĉiu logika funkcio estas reprezentebla 
-per supermetaĵo el la funkcioj `kaj`, `aŭ` kaj `ne`, sistemo estas jam kompleta, se tiuj tri funkcioj 
+per supermetaĵo el la funkcioj `KAJ`, `AŬ` kaj `NE`, sistemo estas jam kompleta, se tiuj tri funkcioj 
 estas reprezenteblaj per la funkcioj de la sistemo. Jam la sistemoj $$\{\land;\lnot\}$$ kaj 
 $$\{\lor;\lnot\}$$ estas kompletaj.
 
@@ -319,24 +303,24 @@ Per supermeto de la funkcioj de iu sistemo oni ricevas fermitan klason, ĝi esta
 Se $$\textbf{σ} = (\sigma_1,...\sigma_n)$$ kaj $$\textbf{τ} = (\tau_1,...\tau_n)$$ estas n-opoj kun 
 elementoj 0 kaj 1 ni difinas rilaton $$\le$$ per $$\textbf{σ}\le\textbf{τ} \iff \sigma_i\le\tau_i; i=1,...,n$$. 
 Iu n-argumenta funkcio $$f$$ estas **monotona**, se el $$\textbf{σ}\le\textbf{τ}$$ sekvas $$ f(\textbf{σ})\le f(\textbf{τ})$$. 
-Ekzemple la funkcioj `kaj`, `aŭ`, `nul` kaj `unu` estas monotonaj. 
-La funkcio `ne` estas ne monotona. Ĉiu bulea termo, kiu ne entenas la funkcion `ne` reprezentas monotonan funkcion kaj 
-ĉiu monotona funkcio estas reprezentebla kiel bulea termo sen la funkcio `ne`. 
+Ekzemple la funkcioj `KAJ`, `AŬ`, `NUL` kaj `UNU` estas monotonaj. 
+La funkcio `NE` estas ne monotona. Ĉiu bulea termo, kiu ne entenas la funkcion `NE` reprezentas monotonan funkcion kaj 
+ĉiu monotona funkcio estas reprezentebla kiel bulea termo sen la funkcio `NE`. 
 La aro de ĉiuj monotonaj funkcioj estas fermita klaso. Ĝi estas generita de la funkcioj 
-`kaj`, `aŭ`, `nul` kaj `unu`.
+`KAJ`, `AŬ`, `NUL` kaj `UNU`.
 
 <!-- klarigu funkciojn nul (1->0,0->0) kaj unu (1->1,0->1) -->
 
 ## Kvazaŭ kompleta funkcisistemo
 
-Sistemo de logikaj funkcioj estas *kvazaŭ kompleta*, se ĝi fariĝas kompleta per aldono de la funkcioj `nul` kaj `unu`.
+Sistemo de logikaj funkcioj estas *kvazaŭ kompleta*, se ĝi fariĝas kompleta per aldono de la funkcioj `NUL` kaj `UNU`.
 Funkcisistemo estas kvazaŭ kompleta, se ĝi entenas almenaŭ nemonotonan kaj nelinearan funkciojn.
 
 ## Dualaj funkcioj
 
 Du n-argumentaj logikaj funkcioj $$f_1$$ kaj $$f_2$$ estas *dualaj*, se
 $$f_1(x_1,...,x_n) = \overline{f_2(\overline{x_1},...,\overline{x_n})}$$.
-Ekzemple la funkcioj `kaj` kaj `aŭ` estas dualaj funkcioj. La memdualaj funkcioj formas fermitan klason.
+Ekzemple la funkcioj `KAJ` kaj `AŬ` estas dualaj funkcioj. La memdualaj funkcioj formas fermitan klason.
 
 ## Konservantaj funkcioj
 
