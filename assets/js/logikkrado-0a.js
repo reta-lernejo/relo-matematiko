@@ -257,6 +257,8 @@ class LkRelajs extends LkPeco {
 
         this.x = x;
         this.y = y;
+        this.pontoj = [];
+        this.aktiva = false;
 
         // kontakto
         const t = Lk.e("text",{
@@ -287,9 +289,6 @@ class LkRelajs extends LkPeco {
 
     // ŝaltilo de la relajso
     ponto(w,fermita) {
-        this.ofermita = fermita;
-        this.w = w;
-
         const x = this.x;
         const y = this.y;
         const ys = y+17.5;
@@ -303,7 +302,7 @@ class LkRelajs extends LkPeco {
             d: `M${x+40} ${ys}L${xw-fend} ${ys}`
         });
         // klapo
-        const p1 = Lk.e("path",{
+        const klap = Lk.e("path",{
              class: "klapo",
              d: `M${xw-fend} ${y+9}L${xw} ${y+25}`
         });
@@ -318,27 +317,36 @@ class LkRelajs extends LkPeco {
             cy: y+25,
             r: 1
         });
-        this.g.append(p,p1,l,c);
+        this.g.append(p,klap,l,c);
+
+        const pt = {w: w, ostato: fermita, klapo: klap};
+        this.pontoj.push(pt);
     }    
     
     // aktiva = true ŝanĝu en staton kiam la relajso estas sub elektro
     // aktiva = false, ŝaltu en la senelektran (originan) staton
     ŝaltu(aktiva=true) {
-        const fermita = aktiva ^ this.ofermita;
-        const fend = 1 - 6*(1-fermita);
-        const x = this.x;
-        const y = this.y;
-        const xw = x+this.w;
-        this.g.querySelectorAll(".klapo").forEach((klapo) => {
+        this.aktiva = aktiva; 
+
+        for (const pt of this.pontoj) {
+            //const fermita = aktiva ^ pt.ostato;
+            //const fend = 1 - 6*(1-fermita);
+            const x = this.x;
+            const y = this.y;
+            const xw = x+pt.w;
             //Lk.a(klapo, {d: `M${xw-fend} ${y+9}L${xw} ${y+25}`});
-            Lk.a(klapo,{
-                transform: `rotate(20 ${xw} ${y+25})`
-            });
-        });
+            if (aktiva) {
+                Lk.a(pt.klapo,{transform: `rotate(15 ${xw} ${y+25})`});
+            } else {
+                pt.klapo.removeAttribute("transform");
+            }
+        }
+/*
         const kerno = this.g.querySelector(".kerno");
         if (kerno) {
             Lk.a(kerno, {d: `M${x+40} ${ys}L${xw-fend} ${ys}`});
         }
+        */
     }
 }
 
@@ -353,7 +361,7 @@ class NEKrado extends Krado {
         const rel = new LkRelajs(0,20,'x');
         rel.ponto(75,true);
         this.aldonu(rel);
-        rel.g.addEventListener("click",() => rel.ŝaltu(true));
+        rel.g.addEventListener("click",() => rel.ŝaltu(!rel.aktiva));
 
         this.poluso();
         this.vdrato(75,10,20);
@@ -487,7 +495,7 @@ class EKVKrado extends Krado {
         const rel1 = new LkRelajs(0,20,'x');
         rel1.ponto(60,false);
         rel1.ponto(75,true);
-        rel1.g.addEventListener("click",() => rel1.ŝaltu(true));
+        rel1.g.addEventListener("click",() => rel1.ŝaltu(!rel1.aktiva));
 
         // relajso 2
         const rel2 = new LkRelajs(0,60,'y');
