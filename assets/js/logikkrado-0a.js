@@ -71,6 +71,21 @@ class LkSVG {
     static kspegul(kj,k0) {
         return kj.map(k => k0-(k-k0))
     }
+
+
+    /**
+     * Difinas reagon de ilo al klako
+     * @param {*} ilo 
+     * @param {function} reago 
+     */
+    klak_reago(ilo,reago) {
+        const i = (typeof ilo === "object")? ilo : this.iloj[_ilo];
+        i.g.addEventListener("click", (event) =>
+        {
+            reago(i,event);
+        })
+    }
+
 }
 
 
@@ -209,15 +224,15 @@ class Krado {
         this.g.append(c,t);
     }*/
 
-    poluso(x,y) {
+    poluso(x=75,y=6) {
         const c = Lk.e("circle",{
             class: "poluso",
             cx: x,
             cy: y,
-            r: 4
+            r: 3.5
         });
         const p = Lk.e("path",{
-            d: `M${x} ${y-3}L${x} ${y+3}M${x-3} ${y}L${x+3} ${y}`
+            d: `M${x} ${y-2}L${x} ${y+2}M${x-2} ${y}L${x+2} ${y}`
         });
         this.g.append(c,p);
     }
@@ -238,6 +253,7 @@ class LkRelajs extends LkPeco {
      */
     constructor(x,y,e) {
         super();
+        Lk.a(this.g,{class: "relajso"});
 
         this.x = x;
         this.y = y;
@@ -270,35 +286,60 @@ class LkRelajs extends LkPeco {
     }
 
     // ŝaltilo de la relajso
-    ponto(x,y,w,fermita) {
+    ponto(w,fermita) {
+        this.ofermita = fermita;
+        this.w = w;
+
+        const x = this.x;
+        const y = this.y;
         const ys = y+17.5;
         const xw = x+w;
-        const fend = 1+5*(1-fermita);
+        const fend = -1 + 6*(1-fermita);
         // strekita
-         const p = Lk.e("path",{
-             fill: "none",
-             stroke: "black",
-             "stroke-dasharray": "5,2",
-             d: `M${x+40} ${ys}L${xw-fend} ${ys}`
-         });
-         // klapo
-         const p1 = Lk.e("path",{
+        // KOREKTU: se ni havas u pontojn ni tamen bezonas
+        // nur unu pli longan kernon
+        const p = Lk.e("path",{
+            class: "kerno",
+            d: `M${x+40} ${ys}L${xw-fend} ${ys}`
+        });
+        // klapo
+        const p1 = Lk.e("path",{
              class: "klapo",
              d: `M${xw-fend} ${y+9}L${xw} ${y+25}`
-         });
-         const l = Lk.e("line",{
-            x1: xw+.5,
-            x2: xw-2,
+        });
+        const l = Lk.e("line",{
+            x1: xw,
+            x2: xw + (fermita?1.5:-1.5),
             y1: y+10,
             y2: y+10
         });
-         const c = Lk.e("circle",{
+        const c = Lk.e("circle",{
             cx: xw,
             cy: y+25,
             r: 1
-         });
-         this.g.append(p,p1,l,c);
-    }        
+        });
+        this.g.append(p,p1,l,c);
+    }    
+    
+    // aktiva = true ŝanĝu en staton kiam la relajso estas sub elektro
+    // aktiva = false, ŝaltu en la senelektran (originan) staton
+    ŝaltu(aktiva=true) {
+        const fermita = aktiva ^ this.ofermita;
+        const fend = 1 - 6*(1-fermita);
+        const x = this.x;
+        const y = this.y;
+        const xw = x+this.w;
+        this.g.querySelectorAll(".klapo").forEach((klapo) => {
+            //Lk.a(klapo, {d: `M${xw-fend} ${y+9}L${xw} ${y+25}`});
+            Lk.a(klapo,{
+                transform: `rotate(20 ${xw} ${y+25})`
+            });
+        });
+        const kerno = this.g.querySelector(".kerno");
+        if (kerno) {
+            Lk.a(kerno, {d: `M${x+40} ${ys}L${xw-fend} ${ys}`});
+        }
+    }
 }
 
 
@@ -310,11 +351,12 @@ class NEKrado extends Krado {
 
         // relajso
         const rel = new LkRelajs(0,20,'x');
-        rel.ponto(0,20,75,true);
+        rel.ponto(75,true);
         this.aldonu(rel);
+        rel.g.addEventListener("click",() => rel.ŝaltu(true));
 
-        this.poluso(75,7);
-        this.vdrato(75,11,19);
+        this.poluso();
+        this.vdrato(75,10,20);
         this.vdrato(75,45,50);
 
         this.hdrato(75,95,15);
@@ -332,15 +374,15 @@ class KAJKrado extends Krado {
 
         // relajso 1
         const rel1 = new LkRelajs(0,20,'x');
-        rel1.ponto(0,20,75,false);
+        rel1.ponto(75,false);
         // relajso 2
         const rel2 = new LkRelajs(0,60,'y');
-        rel2.ponto(0,60,75,false);
+        rel2.ponto(75,false);
 
         this.aldonu(rel1,rel2);
 
-        this.poluso(75,7);
-        this.vdrato(75,11,19);
+        this.poluso();
+        this.vdrato(75,10,20);
         this.vdrato(75,45,25);
         this.vdrato(75,85,10);
 
@@ -358,19 +400,19 @@ class NKAJKrado extends Krado {
 
         // relajso 1
         const rel1 = new LkRelajs(0,20,'x');
-        rel1.ponto(0,20,60,true);
+        rel1.ponto(60,true);
         // relajso 2
         const rel2 = new LkRelajs(0,60,'y');
-        rel2.ponto(0,60,75,true);
+        rel2.ponto(75,true);
 
         this.aldonu(rel1,rel2);
 
-        this.poluso(60,7);
-        this.vdrato(60,11,19);
+        this.poluso(60);
+        this.vdrato(60,10,20);
         this.vdrato(60,45,50);
 
-        this.poluso(75,7);
-        this.vdrato(75,11,59);
+        this.poluso();
+        this.vdrato(75,10,60);
         this.vdrato(75,85,10);
 
         this.hdrato(60,95,30);
@@ -386,20 +428,20 @@ class AŬKrado extends Krado {
 
         // relajso 1
         const rel1 = new LkRelajs(0,20,'x');
-        rel1.ponto(0,20,60,false);
+        rel1.ponto(60,false);
 
         // relajso 2
         const rel2 = new LkRelajs(0,60,'y');
-        rel2.ponto(0,60,75,false);
+        rel2.ponto(75,false);
 
         this.aldonu(rel1,rel2);
 
-        this.poluso(60,7);
-        this.vdrato(60,11,19);
+        this.poluso(60);
+        this.vdrato(60,10,20);
         this.vdrato(60,45,50);
 
-        this.poluso(75,7);
-        this.vdrato(75,11,59);
+        this.poluso();
+        this.vdrato(75,10,60);
         this.vdrato(75,85,10);
 
         this.hdrato(60,95,30);
@@ -416,16 +458,16 @@ class NEKKrado extends Krado {
 
         // relajso 1
         const rel1 = new LkRelajs(0,20,'x');
-        rel1.ponto(0,20,75,true);
+        rel1.ponto(75,true);
 
         // relajso 2
         const rel2 = new LkRelajs(0,60,'y');
-        rel2.ponto(0,60,75,true);
+        rel2.ponto(75,true);
 
         this.aldonu(rel1,rel2);
 
-        this.poluso(75,7);
-        this.vdrato(75,11,19);
+        this.poluso();
+        this.vdrato(75,10,20);
         this.vdrato(75,45,25);
         this.vdrato(75,85,10);
 
@@ -443,23 +485,24 @@ class EKVKrado extends Krado {
 
         // relajso 1
         const rel1 = new LkRelajs(0,20,'x');
-        rel1.ponto(0,20,60,false);
-        rel1.ponto(0,20,75,true);
+        rel1.ponto(60,false);
+        rel1.ponto(75,true);
+        rel1.g.addEventListener("click",() => rel1.ŝaltu(true));
 
         // relajso 2
         const rel2 = new LkRelajs(0,60,'y');
-        rel2.ponto(0,60,60,true);
-        rel2.ponto(0,60,75,false);
+        rel2.ponto(60,true);
+        rel2.ponto(75,false);
 
         this.aldonu(rel1,rel2);
 
-        this.poluso(60,7);
-        this.vdrato(60,11,19);
+        this.poluso(60);
+        this.vdrato(60,10,20);
         this.vdrato(60,45,25);
         this.vdrato(60,85,10);
 
-        this.poluso(75,7);
-        this.vdrato(75,11,19);
+        this.poluso();
+        this.vdrato(75,10,20);
         this.vdrato(75,45,25);
         this.vdrato(75,85,10);
 
@@ -476,23 +519,23 @@ class XAŬKrado extends Krado {
 
         // relajso 1
         const rel1 = new LkRelajs(0,20,'x');
-        rel1.ponto(0,20,60,true);
-        rel1.ponto(0,20,75,false);
+        rel1.ponto(60,true);
+        rel1.ponto(75,false);
 
         // relajso 2
         const rel2 = new LkRelajs(0,60,'y');
-        rel2.ponto(0,60,60,false);
-        rel2.ponto(0,60,75,true);
+        rel2.ponto(60,false);
+        rel2.ponto(75,true);
 
         this.aldonu(rel1,rel2);
 
-        this.poluso(60,7);
-        this.vdrato(60,11,19);
+        this.poluso(60);
+        this.vdrato(60,10,20);
         this.vdrato(60,45,25);
         this.vdrato(60,85,10);
 
-        this.poluso(75,7);
-        this.vdrato(75,11,19);
+        this.poluso();
+        this.vdrato(75,10,20);
         this.vdrato(75,45,25);
         this.vdrato(75,85,10);
 

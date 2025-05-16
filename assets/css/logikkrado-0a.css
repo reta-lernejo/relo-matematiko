@@ -7,14 +7,28 @@
 .logikkrado rect {
     stroke: black;
     fill: none;
+    pointer-events: all;
 }
 
 .logikkrado path {
     stroke: black;
+    stroke-linecap: round;
+    fill: none;
+}
+
+.logikkrado line {
+    stroke: black;
+    stroke-linecap: round;
     fill: none;
 }
 
 .logikkrado circle {
     stroke: black;
     fill: none;
+}
+
+.relajso .kerno {
+    fill: none;
+    stroke: black;
+    stroke-dasharray: 5,2;
 }
