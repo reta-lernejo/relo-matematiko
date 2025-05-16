@@ -1,0 +1,20 @@
+.logikkrado .plato {
+    fill: #dde;
+    stroke-width: 0.5;
+    stroke: gray;
+}
+
+.logikkrado rect {
+    stroke: black;
+    fill: none;
+}
+
+.logikkrado path {
+    stroke: black;
+    fill: none;
+}
+
+.logikkrado circle {
+    stroke: black;
+    fill: none;
+}

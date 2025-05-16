@@ -127,7 +127,7 @@ class Lk {
 }
 
 class Krado {
-    constructor(id, klaso="krado") {
+    constructor(id, klaso="logikkrado") {
         this.id = id;
 
         // SVG grupo-elemento, kiu entenas la grafikon de la ilo
@@ -137,14 +137,16 @@ class Krado {
         });    
         
         const r = Lk.e("rect",{
+            class: "plato",
             height: 100,
             width: 100,
-            rx: 10,
-            fill: "#dde",
-            "stroke-width": 0.5,
-            stroke: "gray"
+            rx: 6,
         });
         this.g.append(r)
+    }
+
+    aldonu(...pecoj) {
+        pecoj.forEach((p) => this.g.append(p.g));
     }
 
     nomo(nom) {
@@ -155,104 +157,28 @@ class Krado {
         this.g.append(t);
     }
 
-    relajso(x,y,e) {
-        this.x = x;
-        this.y = y;
-
-        const t = Lk.e("text",{
-            x: x+3,
-            y: y+10,
-            "font-size": 10
-        },e);
-        const c = Lk.e("circle",{
-            class: "kontakto",
-            cx: x+3,
-            cy: y,
-            r: 2,
-            fill: "none",
-            stroke:"black"
-        });
-        const r = Lk.e("rect",{
-            x: x+20,
-            y: y+10,
-            width: 20,
-            height: 15,
-            fill: "none",
-            stroke: "black"
-        });
-        const p = Lk.e("path",{
-           d: "M5 0L30 0L30 10M30 25L30 35M26 35L34 35",
-           fill: "none",
-           stroke: "black",
-           transform: `translate(${x} ${y})`
-        }); 
-        this.g.append(t,c,r,p);
-    }
-
-    // ŝaltilo de la relajso
-    ponto(x,y,w,fermita) {
-        const ys = y+17.5;
-        const xw = x+w;
-        const fend = 1+5*(1-fermita);
-        // strekita
-         const p = Lk.e("path",{
-             fill: "none",
-             stroke: "black",
-             "stroke-dasharray": "5,2",
-             d: `M${x+40} ${ys}L${xw-fend} ${ys}`
-         });
-         // klapo
-         const p1 = Lk.e("path",{
-             class: "klapo",
-             fill: "none",
-             stroke: "black",
-             d: `M${xw-fend} ${y+9}L${xw} ${y+25}`
-         });
-         const l = Lk.e("line",{
-            x1: xw+.5,
-            x2: xw-2,
-            y1: y+10,
-            y2: y+10,
-            fill: "none",
-            stroke: "black",
-        });
-         const c = Lk.e("circle",{
-            cx: xw,
-            cy: y+25,
-            r: 1
-         });
-         this.g.append(p,p1,l,c);
-    }    
 
     eliro(x=90,y1=10,y2=70) {
         const p = Lk.e("path",{
-            fill: "none",
-            stroke: "black",
             d: `M96 ${y1}L${x} ${y1}L${x} ${y2}L96 ${y2}M${x} ${y2}L${x} 95`
         });
         const c1 = Lk.e("circle",{
             class: "kontakto",
             cx: 98,
             cy: y1,
-            r: 2,
-            fill: "none",
-            stroke:"black"
+            r: 2
         });        
         const c2 = Lk.e("circle",{
             class: "kontakto",
             cx: 98,
             cy: y2,
-            r: 2,
-            fill: "none",
-            stroke:"black"
+            r: 2
         });        
         this.g.append(p,c1,c2);
     }
 
     vdrato(x,y,l) {
         const p = Lk.e("path",{
-            fill: "none",
-            stroke: "black",
             d: `M${x} ${y}l0 ${l}`
         });
 
@@ -261,8 +187,6 @@ class Krado {
 
     hdrato(x,y,l) {
         const p = Lk.e("path",{
-            fill: "none",
-            stroke: "black",
             d: `M${x} ${y}l${l} 0`
         });
         this.g.append(p);
@@ -290,18 +214,91 @@ class Krado {
             class: "poluso",
             cx: x,
             cy: y,
-            r: 4,
-            stroke: "black",
-            fill: "none"
+            r: 4
         });
         const p = Lk.e("path",{
-            fill: "none",
-            stroke: "black",
             d: `M${x} ${y-3}L${x} ${y+3}M${x-3} ${y}L${x+3} ${y}`
         });
         this.g.append(c,p);
     }
+}
 
+class LkPeco {
+    constructor() {
+        this.g = Lk.e("g");
+    }
+}
+
+class LkRelajs extends LkPeco {
+    /**
+     * 
+     * @param {*} x pozicio de la kontakto
+     * @param {*} y pozicio de la kontakto
+     * @param {*} e nomo de la kontakto
+     */
+    constructor(x,y,e) {
+        super();
+
+        this.x = x;
+        this.y = y;
+
+        // kontakto
+        const t = Lk.e("text",{
+            x: x+3,
+            y: y+10,
+            "font-size": 10
+        },e);
+        const c = Lk.e("circle",{
+            class: "kontakto",
+            cx: x+3,
+            cy: y,
+            r: 2,
+        });
+        // bobeno
+        const r = Lk.e("rect",{
+            x: x+20,
+            y: y+10,
+            width: 20,
+            height: 15,
+        });
+        // drato
+        const p = Lk.e("path",{
+           d: "M5 0L30 0L30 10M30 25L30 35M26 35L34 35",
+           transform: `translate(${x} ${y})`
+        }); 
+        this.g.append(t,c,r,p);
+    }
+
+    // ŝaltilo de la relajso
+    ponto(x,y,w,fermita) {
+        const ys = y+17.5;
+        const xw = x+w;
+        const fend = 1+5*(1-fermita);
+        // strekita
+         const p = Lk.e("path",{
+             fill: "none",
+             stroke: "black",
+             "stroke-dasharray": "5,2",
+             d: `M${x+40} ${ys}L${xw-fend} ${ys}`
+         });
+         // klapo
+         const p1 = Lk.e("path",{
+             class: "klapo",
+             d: `M${xw-fend} ${y+9}L${xw} ${y+25}`
+         });
+         const l = Lk.e("line",{
+            x1: xw+.5,
+            x2: xw-2,
+            y1: y+10,
+            y2: y+10
+        });
+         const c = Lk.e("circle",{
+            cx: xw,
+            cy: y+25,
+            r: 1
+         });
+         this.g.append(p,p1,l,c);
+    }        
 }
 
 
@@ -312,8 +309,9 @@ class NEKrado extends Krado {
         this.eliro();
 
         // relajso
-        this.relajso(0,20,'x');
-        this.ponto(0,20,75,true);
+        const rel = new LkRelajs(0,20,'x');
+        rel.ponto(0,20,75,true);
+        this.aldonu(rel);
 
         this.poluso(75,7);
         this.vdrato(75,11,19);
@@ -333,12 +331,13 @@ class KAJKrado extends Krado {
         this.eliro();
 
         // relajso 1
-        this.relajso(0,20,'x');
-        this.ponto(0,20,75,false);
-
+        const rel1 = new LkRelajs(0,20,'x');
+        rel1.ponto(0,20,75,false);
         // relajso 2
-        this.relajso(0,60,'y');
-        this.ponto(0,60,75,false);
+        const rel2 = new LkRelajs(0,60,'y');
+        rel2.ponto(0,60,75,false);
+
+        this.aldonu(rel1,rel2);
 
         this.poluso(75,7);
         this.vdrato(75,11,19);
@@ -358,12 +357,13 @@ class NKAJKrado extends Krado {
         this.eliro();
 
         // relajso 1
-        this.relajso(0,20,'x');
-        this.ponto(0,20,60,true);
-
+        const rel1 = new LkRelajs(0,20,'x');
+        rel1.ponto(0,20,60,true);
         // relajso 2
-        this.relajso(0,60,'y');
-        this.ponto(0,60,75,true);
+        const rel2 = new LkRelajs(0,60,'y');
+        rel2.ponto(0,60,75,true);
+
+        this.aldonu(rel1,rel2);
 
         this.poluso(60,7);
         this.vdrato(60,11,19);
@@ -385,12 +385,14 @@ class AŬKrado extends Krado {
         this.eliro();
 
         // relajso 1
-        this.relajso(0,20,'x');
-        this.ponto(0,20,60,false);
+        const rel1 = new LkRelajs(0,20,'x');
+        rel1.ponto(0,20,60,false);
 
         // relajso 2
-        this.relajso(0,60,'y');
-        this.ponto(0,60,75,false);
+        const rel2 = new LkRelajs(0,60,'y');
+        rel2.ponto(0,60,75,false);
+
+        this.aldonu(rel1,rel2);
 
         this.poluso(60,7);
         this.vdrato(60,11,19);
@@ -413,12 +415,14 @@ class NEKKrado extends Krado {
         this.eliro();
 
         // relajso 1
-        this.relajso(0,20,'x');
-        this.ponto(0,20,75,true);
+        const rel1 = new LkRelajs(0,20,'x');
+        rel1.ponto(0,20,75,true);
 
         // relajso 2
-        this.relajso(0,60,'y');
-        this.ponto(0,60,75,true);
+        const rel2 = new LkRelajs(0,60,'y');
+        rel2.ponto(0,60,75,true);
+
+        this.aldonu(rel1,rel2);
 
         this.poluso(75,7);
         this.vdrato(75,11,19);
@@ -438,14 +442,16 @@ class EKVKrado extends Krado {
         this.eliro();
 
         // relajso 1
-        this.relajso(0,20,'x');
-        this.ponto(0,20,60,false);
-        this.ponto(0,20,75,true);
+        const rel1 = new LkRelajs(0,20,'x');
+        rel1.ponto(0,20,60,false);
+        rel1.ponto(0,20,75,true);
 
         // relajso 2
-        this.relajso(0,60,'y');
-        this.ponto(0,60,60,true);
-        this.ponto(0,60,75,false);
+        const rel2 = new LkRelajs(0,60,'y');
+        rel2.ponto(0,60,60,true);
+        rel2.ponto(0,60,75,false);
+
+        this.aldonu(rel1,rel2);
 
         this.poluso(60,7);
         this.vdrato(60,11,19);
@@ -469,14 +475,16 @@ class XAŬKrado extends Krado {
         this.eliro();
 
         // relajso 1
-        this.relajso(0,20,'x');
-        this.ponto(0,20,60,true);
-        this.ponto(0,20,75,false);
+        const rel1 = new LkRelajs(0,20,'x');
+        rel1.ponto(0,20,60,true);
+        rel1.ponto(0,20,75,false);
 
         // relajso 2
-        this.relajso(0,60,'y');
-        this.ponto(0,60,60,false);
-        this.ponto(0,60,75,true);
+        const rel2 = new LkRelajs(0,60,'y');
+        rel2.ponto(0,60,60,false);
+        rel2.ponto(0,60,75,true);
+
+        this.aldonu(rel1,rel2);
 
         this.poluso(60,7);
         this.vdrato(60,11,19);
