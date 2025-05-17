@@ -32,3 +32,9 @@
     stroke: black;
     stroke-dasharray: 5,2;
 }
+
+/* provizore ni uzas la kontaktojn ankaŭ kiel LED-lumoj */
+
+.aktiva .kontakto {
+    fill: red;
+}

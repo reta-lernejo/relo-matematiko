@@ -19,7 +19,7 @@ lanĉe(() => {
     SVG = new LkSVG(ĝi("#plato"));
 
     NE = new NEKrado("NE");
-    
+
     KAJ = new KAJKrado("KAJ");   
     SVG.ŝovu(KAJ.g,100,50);
 

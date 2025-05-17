@@ -173,7 +173,63 @@ class Krado {
     }
 
 
-    eliro(x=90,y1=10,y2=70) {
+
+    /*
+    vdrato(x,y,l) {
+        const p = Lk.e("path",{
+            d: `M${x} ${y}l0 ${l}`
+        });
+
+        this.g.append(p);
+    }
+
+    hdrato(x,y,l) {
+        const p = Lk.e("path",{
+            d: `M${x} ${y}l${l} 0`
+        });
+        this.g.append(p);
+    }*/
+
+    poluso(x=75,y=6) {
+        const c = Lk.e("circle",{
+            class: "poluso",
+            cx: x,
+            cy: y,
+            r: 3.5
+        });
+        const p = Lk.e("path",{
+            d: `M${x} ${y-2}L${x} ${y+2}M${x-2} ${y}L${x+2} ${y}`
+        });
+        this.g.append(c,p);
+    }
+}
+
+class LkPeco {
+    constructor(aktiva, cls="peco") {
+        this.aktiva = aktiva;
+        if (aktiva) cls = cls + " aktiva"
+        this.g = Lk.e("g",{
+            class: cls
+        });
+    }
+
+    // aktiva = true ŝanĝu en staton, en kiu trafluas elektro
+    // aktiva = false, ŝaltu en la senelektran staton
+    ŝaltu(aktiva=true) {
+        this.aktiva = aktiva; 
+
+        if (aktiva) {
+            this.g.classList.add("aktiva");
+        } else {
+            this.g.classList.remove("aktiva");
+        }
+    }        
+}
+
+class LkEliro extends LkPeco {
+    constructor(aktiva, x=90,y1=10,y2=70) {
+        super(aktiva);
+
         const p = Lk.e("path",{
             d: `M96 ${y1}L${x} ${y1}L${x} ${y2}L96 ${y2}M${x} ${y2}L${x} 95`
         });
@@ -191,48 +247,12 @@ class Krado {
         });        
         this.g.append(p,c1,c2);
     }
-
-    vdrato(x,y,l) {
-        const p = Lk.e("path",{
-            d: `M${x} ${y}l0 ${l}`
-        });
-
-        this.g.append(p);
-    }
-
-    hdrato(x,y,l) {
-        const p = Lk.e("path",{
-            d: `M${x} ${y}l${l} 0`
-        });
-        this.g.append(p);
-    }
-
-    poluso(x=75,y=6) {
-        const c = Lk.e("circle",{
-            class: "poluso",
-            cx: x,
-            cy: y,
-            r: 3.5
-        });
-        const p = Lk.e("path",{
-            d: `M${x} ${y-2}L${x} ${y+2}M${x-2} ${y}L${x+2} ${y}`
-        });
-        this.g.append(c,p);
-    }
-}
-
-class LkPeco {
-    constructor(cls="peco") {
-        this.g = Lk.e("g",{
-            class: cls
-        });
-    }
 }
 
 /** drato kiu kondukas de poluso tra pontoj de relajso ĝis eliro */
 class LkDrato extends LkPeco {
-    constructor(xp,xe,...Y) {
-        super("drato");
+    constructor(aktiva,xp,xe,...Y) {
+        super(aktiva,"drato");
 
         // poluso
         const y0 = Y[0];
@@ -270,6 +290,7 @@ class LkDrato extends LkPeco {
         });
         this.g.append(h);
     }
+
 }
 
 class LkRelajs extends LkPeco {
@@ -279,8 +300,8 @@ class LkRelajs extends LkPeco {
      * @param {*} y pozicio de la kontakto
      * @param {*} e nomo de la kontakto
      */
-    constructor(x,y,e) {
-        super("relajso");
+    constructor(aktiva,x,y,e) {
+        super(aktiva,"relajso");
 
         this.x = x;
         this.y = y;
@@ -346,14 +367,14 @@ class LkRelajs extends LkPeco {
         });
         this.g.append(p,klap,l,c);
 
-        const pt = {w: w, ostato: fermita, klapo: klap};
+        const pt = {w: w, fermita0: fermita, fermita: fermita, klapo: klap};
         this.pontoj.push(pt);
     }    
     
     // aktiva = true ŝanĝu en staton kiam la relajso estas sub elektro
     // aktiva = false, ŝaltu en la senelektran (originan) staton
     ŝaltu(aktiva=true) {
-        this.aktiva = aktiva; 
+        super.ŝaltu(aktiva);
 
         for (const pt of this.pontoj) {
             //const fermita = aktiva ^ pt.ostato;
@@ -364,8 +385,10 @@ class LkRelajs extends LkPeco {
             //Lk.a(klapo, {d: `M${xw-fend} ${y+9}L${xw} ${y+25}`});
             if (aktiva) {
                 Lk.a(pt.klapo,{transform: `rotate(15 ${xw} ${y+25})`});
+                pt.fermita = !pt.fermita0;
             } else {
                 pt.klapo.removeAttribute("transform");
+                pt.fermita = pt.fermita0;
             }
         }
 
@@ -377,15 +400,20 @@ class NEKrado extends Krado {
     constructor(id) {
         super(id);
         this.nomo("NE");
-        this.eliro();
 
         // relajso
-        const rel = new LkRelajs(0,20,'x');
+        const rel = new LkRelajs(false,0,20,'x');
         rel.ponto(75,true);
-        rel.g.addEventListener("click",() => rel.ŝaltu(!rel.aktiva));
+        const drat = new LkDrato(true,75,90,6,10,30,45,95);
+        const eliro = new LkEliro(true);
 
-        const drat = new LkDrato(75,90,6,10,30,45,95);
-        this.aldonu(rel, drat)
+        rel.g.addEventListener("click",() => {
+            rel.ŝaltu(!rel.aktiva);
+            drat.ŝaltu(rel.pontoj[0].fermita);
+            eliro.ŝaltu(drat.aktiva);
+        });
+
+        this.aldonu(rel, drat, eliro)
 
     };
 }
@@ -395,18 +423,30 @@ class KAJKrado extends Krado {
     constructor(id) {
         super(id);
         this.nomo("KAJ");
-        this.eliro();
 
         // relajso 1
-        const rel1 = new LkRelajs(0,20,'x');
+        const rel1 = new LkRelajs(false,0,20,'x');
         rel1.ponto(75,false);
         // relajso 2
-        const rel2 = new LkRelajs(0,60,'y');
+        const rel2 = new LkRelajs(false,0,60,'y');
         rel2.ponto(75,false);
 
-        const drat = new LkDrato(75,90,6,10,30,45,70,85,95);
-        this.aldonu(rel1,rel2,drat)
+        const drat = new LkDrato(false,75,90,6,10,30,45,70,85,95);
+        const eliro = new LkEliro(false);
 
+        rel1.g.addEventListener("click",() => {
+            rel1.ŝaltu(!rel1.aktiva);
+            drat.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            eliro.ŝaltu(drat.aktiva);
+        });
+        
+        rel2.g.addEventListener("click",() => {
+            rel2.ŝaltu(!rel2.aktiva);
+            drat.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            eliro.ŝaltu(drat.aktiva);
+        });
+
+        this.aldonu(rel1,rel2,drat,eliro)
     };
 }
 
@@ -415,20 +455,31 @@ class NKAJKrado extends Krado {
     constructor(id) {
         super(id);
         this.nomo("NKAJ");
-        this.eliro();
 
         // relajso 1
-        const rel1 = new LkRelajs(0,20,'x');
+        const rel1 = new LkRelajs(false,0,20,'x');
         rel1.ponto(60,true);
         // relajso 2
-        const rel2 = new LkRelajs(0,60,'y');
+        const rel2 = new LkRelajs(false,0,60,'y');
         rel2.ponto(75,true);
 
-        const drat1 = new LkDrato(60,90,6,10,30,45,95);
-        const drat2 = new LkDrato(75,90,6,10,70,85,95);
+        const drat1 = new LkDrato(true,60,90,6,10,30,45,95);
+        const drat2 = new LkDrato(true,75,90,6,10,70,85,95);
+        const eliro = new LkEliro(true);
 
-        this.aldonu(rel1,rel2,drat1,drat2);
+        rel1.g.addEventListener("click",() => {
+            rel1.ŝaltu(!rel1.aktiva);
+            drat1.ŝaltu(rel1.pontoj[0].fermita);
+            eliro.ŝaltu(drat1.aktiva || drat2.aktiva);
+        });
 
+        rel2.g.addEventListener("click",() => {
+            rel2.ŝaltu(!rel2.aktiva);
+            drat2.ŝaltu(rel2.pontoj[0].fermita);
+            eliro.ŝaltu(drat1.aktiva || drat2.aktiva);
+        });
+
+        this.aldonu(rel1,rel2,drat1,drat2,eliro);
     }
 }
 
@@ -436,21 +487,32 @@ class AŬKrado extends Krado {
     constructor(id) {
         super(id);
         this.nomo("AŬ");
-        this.eliro();
 
         // relajso 1
-        const rel1 = new LkRelajs(0,20,'x');
+        const rel1 = new LkRelajs(false,0,20,'x');
         rel1.ponto(60,false);
 
         // relajso 2
-        const rel2 = new LkRelajs(0,60,'y');
+        const rel2 = new LkRelajs(false,0,60,'y');
         rel2.ponto(75,false);
 
-        const drat1 = new LkDrato(60,90,6,10,30,45,95);
-        const drat2 = new LkDrato(75,90,6,10,70,85,95);
+        const drat1 = new LkDrato(false,60,90,6,10,30,45,95);
+        const drat2 = new LkDrato(false,75,90,6,10,70,85,95);
+        const eliro = new LkEliro(false);
 
-        this.aldonu(rel1,rel2,drat1,drat2);
+        rel1.g.addEventListener("click",() => {
+            rel1.ŝaltu(!rel1.aktiva);
+            drat1.ŝaltu(rel1.pontoj[0].fermita);
+            eliro.ŝaltu(drat1.aktiva || drat2.aktiva);
+        });
 
+        rel2.g.addEventListener("click",() => {
+            rel2.ŝaltu(!rel2.aktiva);
+            drat2.ŝaltu(rel1.pontoj[0].fermita);
+            eliro.ŝaltu(drat1.aktiva || drat2.aktiva);
+        });
+
+        this.aldonu(rel1,rel2,drat1,drat2,eliro);
     }
 }
 
@@ -459,20 +521,32 @@ class NEKKrado extends Krado {
     constructor(id) {
         super(id);
         this.nomo("NEK");
-        this.eliro();
 
         // relajso 1
-        const rel1 = new LkRelajs(0,20,'x');
+        const rel1 = new LkRelajs(false,0,20,'x');
         rel1.ponto(75,true);
 
         // relajso 2
-        const rel2 = new LkRelajs(0,60,'y');
+        const rel2 = new LkRelajs(false,0,60,'y');
         rel2.ponto(75,true);
 
-        const drat = new LkDrato(75,90,6,10,30,45,70,85,95);
+        const drat = new LkDrato(false,75,90,6,10,30,45,70,85,95);
+        const eliro = new LkEliro(true);
 
-        this.aldonu(rel1,rel2,drat);
+        rel1.g.addEventListener("click",() => {
+            rel1.ŝaltu(!rel1.aktiva);
+            drat.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            eliro.ŝaltu(drat.aktiva);
+        });
 
+        rel2.g.addEventListener("click",() => {
+            rel2.ŝaltu(!rel2.aktiva);
+            drat.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            eliro.ŝaltu(drat.aktiva);
+        });
+
+
+        this.aldonu(rel1,rel2,drat,eliro);
     };
 }
 
@@ -481,23 +555,36 @@ class EKVKrado extends Krado {
     constructor(id) {
         super(id);
         this.nomo("EKV");
-        this.eliro();
 
         // relajso 1
-        const rel1 = new LkRelajs(0,20,'x');
-        rel1.ponto(60,false);
-        rel1.ponto(75,true);
-        rel1.g.addEventListener("click",() => rel1.ŝaltu(!rel1.aktiva));
+        const rel1 = new LkRelajs(false,0,20,'x');
+        rel1.ponto(60,true);
+        rel1.ponto(75,false);
 
         // relajso 2
-        const rel2 = new LkRelajs(0,60,'y');
+        const rel2 = new LkRelajs(false,0,60,'y');
         rel2.ponto(60,true);
         rel2.ponto(75,false);
 
-        const drat1 = new LkDrato(60,90,6,10,30,45,70,85,95);
-        const drat2 = new LkDrato(75,90,6,10,30,45,70,85,95);
+        const drat1 = new LkDrato(true,60,90,6,10,30,45,70,85,95);
+        const drat2 = new LkDrato(false,75,90,6,10,30,45,70,85,95);
+        const eliro = new LkEliro(true);
 
-        this.aldonu(rel1,rel2,drat1,drat2);
+        rel1.g.addEventListener("click",() => {
+            rel1.ŝaltu(!rel1.aktiva);
+            drat1.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            drat2.ŝaltu(rel1.pontoj[1].fermita && rel2.pontoj[1].fermita);
+            eliro.ŝaltu(drat1.aktiva || drat2.aktiva);
+        });
+
+        rel2.g.addEventListener("click",() => {
+            rel2.ŝaltu(!rel2.aktiva);
+            drat1.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            drat2.ŝaltu(rel1.pontoj[1].fermita && rel2.pontoj[1].fermita);
+            eliro.ŝaltu(drat1.aktiva || drat2.aktiva);
+        });
+
+        this.aldonu(rel1,rel2,drat1,drat2,eliro);
     }
 }
 
@@ -505,23 +592,36 @@ class XAŬKrado extends Krado {
     constructor(id) {
         super(id);
         this.nomo("XAŬ");
-        this.eliro();
 
         // relajso 1
-        const rel1 = new LkRelajs(0,20,'x');
+        const rel1 = new LkRelajs(false,0,20,'x');
         rel1.ponto(60,true);
         rel1.ponto(75,false);
 
         // relajso 2
-        const rel2 = new LkRelajs(0,60,'y');
+        const rel2 = new LkRelajs(false,0,60,'y');
         rel2.ponto(60,false);
         rel2.ponto(75,true);
 
-        const drat1 = new LkDrato(60,90,6,10,30,45,70,85,95);
-        const drat2 = new LkDrato(75,90,6,10,30,45,70,85,95);
+        const drat1 = new LkDrato(false,60,90,6,10,30,45,70,85,95);
+        const drat2 = new LkDrato(false,75,90,6,10,30,45,70,85,95);
+        const eliro = new LkEliro(false);
 
-        this.aldonu(rel1,rel2,drat1,drat2);
+        rel1.g.addEventListener("click",() => {
+            rel1.ŝaltu(!rel1.aktiva);
+            drat1.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            drat2.ŝaltu(rel1.pontoj[1].fermita && rel2.pontoj[1].fermita);
+            eliro.ŝaltu(drat1.aktiva || drat2.aktiva);
+        });
 
+        rel2.g.addEventListener("click",() => {
+            rel2.ŝaltu(!rel2.aktiva);
+            drat1.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            drat2.ŝaltu(rel1.pontoj[1].fermita && rel2.pontoj[1].fermita);
+            eliro.ŝaltu(drat1.aktiva || drat2.aktiva);
+        });
+
+        this.aldonu(rel1,rel2,drat1,drat2,eliro);
     }
 }
 
