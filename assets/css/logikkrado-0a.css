@@ -27,6 +27,12 @@
     fill: none;
 }
 
+.logikkrado line.maso {
+    stroke: black;
+    stroke-linecap: butt;
+    stroke-width: 2;
+}
+
 .relajso .kerno {
     fill: none;
     stroke: black;

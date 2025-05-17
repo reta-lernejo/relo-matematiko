@@ -38,7 +38,10 @@ lanĉe(() => {
     EKV = new EKVKrado("EKV");   
     SVG.ŝovu(EKV.g,300,150);
 
-    SVG.svg.append(NE.g,KAJ.g,NKAJ.g,AŬ.g,NEK.g,XAŬ.g,EKV.g);
+    KXA = new KAJXAŬKrado("&/=1");
+    SVG.ŝovu(KXA.g,300,50);
+
+    SVG.svg.append(NE.g,KAJ.g,NKAJ.g,AŬ.g,NEK.g,XAŬ.g,EKV.g,KXA.g);
 });
 
 </script>

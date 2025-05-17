@@ -227,25 +227,33 @@ class LkPeco {
 }
 
 class LkEliro extends LkPeco {
-    constructor(aktiva, x=90,y1=10,y2=70) {
+    constructor(aktiva,x=90,y1=10,y2=70,yd=95) {
         super(aktiva);
 
-        const p = Lk.e("path",{
-            d: `M96 ${y1}L${x} ${y1}L${x} ${y2}L96 ${y2}M${x} ${y2}L${x} 95`
-        });
+        let d = `M96 ${y1}L${x} ${y1}`
         const c1 = Lk.e("circle",{
             class: "kontakto",
             cx: 98,
             cy: y1,
             r: 2
-        });        
-        const c2 = Lk.e("circle",{
-            class: "kontakto",
-            cx: 98,
-            cy: y2,
-            r: 2
-        });        
-        this.g.append(p,c1,c2);
+        });  
+        if (y2) {
+            d += `L${x} ${y2}L96 ${y2}M${x} ${y2}`;
+            const c2 = Lk.e("circle",{
+                class: "kontakto",
+                cx: 98,
+                cy: y2,
+                r: 2
+            });            
+            this.g.append(c2);
+        } ;
+        d += `L${x} ${yd}`;
+        
+        const p = Lk.e("path",{
+            d: d
+        });
+
+        this.g.append(p,c1);
     }
 }
 
@@ -329,10 +337,18 @@ class LkRelajs extends LkPeco {
         });
         // drato
         const p = Lk.e("path",{
-           d: "M5 0L30 0L30 10M30 25L30 35M26 35L34 35",
+           d: "M5 0L30 0L30 10M30 25L30 32",
            transform: `translate(${x} ${y})`
         }); 
-        this.g.append(t,c,r,p);
+        // maso
+        const l = Lk.e("line",{
+            class: "maso",
+            x1: x+26,
+            y1: y+32,
+            x2: x+34,
+            y2: y+32
+        })
+        this.g.append(t,c,r,p,l);
     }
 
     // ŝaltilo de la relajso
@@ -622,6 +638,71 @@ class XAŬKrado extends Krado {
         });
 
         this.aldonu(rel1,rel2,drat1,drat2,eliro);
+    }
+}
+
+// duonadiciilo el KAJ kaj XAŬ
+class KAJXAŬKrado extends Krado {
+    constructor(id) {
+        super(id);
+        this.nomo("&/=1");
+
+        // relajso 1
+        const rel1 = new LkRelajs(false,0,20,'x');
+        rel1.ponto(50,false);
+        rel1.ponto(65,true);
+        rel1.ponto(80,false);
+
+        // relajso 2
+        const rel2 = new LkRelajs(false,0,60,'y');
+        rel2.ponto(50,false);
+        rel2.ponto(65,false);
+        rel2.ponto(80,true);
+
+        // kaj
+        const drat1 = new LkDrato(false,50,92,6,10,30,45,70,85,96);
+        const eliro1 = new LkEliro(false,92,70,null,96);
+        // xaŭ
+        const drat2 = new LkDrato(false,65,88,6,10,30,45,70,85,92);
+        const drat3 = new LkDrato(false,80,88,6,10,30,45,70,85,92);
+        const eliro2 = new LkEliro(false,88,10,null,92);
+
+        rel1.g.addEventListener("click",() => {
+            rel1.ŝaltu(!rel1.aktiva);
+            drat1.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            drat2.ŝaltu(rel1.pontoj[1].fermita && rel2.pontoj[1].fermita);
+            drat3.ŝaltu(rel1.pontoj[2].fermita && rel2.pontoj[2].fermita);
+            eliro1.ŝaltu(drat1.aktiva);
+            eliro2.ŝaltu(drat2.aktiva || drat3.aktiva);
+        });
+
+        rel2.g.addEventListener("click",() => {
+            rel2.ŝaltu(!rel2.aktiva);
+            drat1.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+            drat2.ŝaltu(rel1.pontoj[1].fermita && rel2.pontoj[1].fermita);
+            drat3.ŝaltu(rel1.pontoj[2].fermita && rel2.pontoj[2].fermita);
+            eliro1.ŝaltu(drat1.aktiva);
+            eliro2.ŝaltu(drat2.aktiva || drat3.aktiva);
+        });
+
+/*
+   const drat = new LkDrato(false,75,90,6,10,30,45,70,85,95);
+   const eliro = new LkEliro(false);
+
+   rel1.g.addEventListener("click",() => {
+       rel1.ŝaltu(!rel1.aktiva);
+       drat.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+       eliro.ŝaltu(drat.aktiva);
+   });
+   
+   rel2.g.addEventListener("click",() => {
+       rel2.ŝaltu(!rel2.aktiva);
+       drat.ŝaltu(rel1.pontoj[0].fermita && rel2.pontoj[0].fermita);
+       eliro.ŝaltu(drat.aktiva);
+   });     
+*/      
+
+        this.aldonu(rel1,rel2,drat1,drat2,drat3,eliro1,eliro2);
     }
 }
 
