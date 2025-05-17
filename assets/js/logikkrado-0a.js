@@ -207,23 +207,6 @@ class Krado {
         this.g.append(p);
     }
 
-    /*
-    kontakto(N,x,y) {
-        const t = Lk.e("text",{
-            x: x+3,
-            y: y+15
-        },N);
-        const c = Lk.e("circle",{
-            class: "kontakto",
-            cx: x,
-            cy: y,
-            r: 2,
-            fill: "none",
-            stroke:"black"
-        });
-        this.g.append(c,t);
-    }*/
-
     poluso(x=75,y=6) {
         const c = Lk.e("circle",{
             class: "poluso",
@@ -239,8 +222,53 @@ class Krado {
 }
 
 class LkPeco {
-    constructor() {
-        this.g = Lk.e("g");
+    constructor(cls="peco") {
+        this.g = Lk.e("g",{
+            class: cls
+        });
+    }
+}
+
+/** drato kiu kondukas de poluso tra pontoj de relajso ĝis eliro */
+class LkDrato extends LkPeco {
+    constructor(xp,xe,...Y) {
+        super("drato");
+
+        // poluso
+        const y0 = Y[0];
+        const c = Lk.e("circle",{
+            class: "poluso",
+            cx: xp,
+            cy: y0,
+            r: 3.5
+        });
+        const p = Lk.e("path",{
+            d: `M${xp} ${y0-2}L${xp} ${y0+2}M${xp-2} ${y0}L${xp+2} ${y0}`
+        });
+
+        this.g.append(c,p);
+
+        // vertikalaj dratpecoj        
+        for (let i=1; i < Y.length-1; i+=2) {
+            const y1 = Y[i];
+            const y2 = Y[i+1];
+            const d = Lk.e("line", {
+                x1: xp,
+                y1: y1,
+                x2: xp,
+                y2: y2
+            });
+            this.g.append(d);
+        }
+        // horizontala linio
+        const y = Y[Y.length-1];
+        const h = Lk.e("line", {
+            x1: xp,
+            y1: y,
+            x2: xe,
+            y2: y
+        });
+        this.g.append(h);
     }
 }
 
@@ -252,8 +280,7 @@ class LkRelajs extends LkPeco {
      * @param {*} e nomo de la kontakto
      */
     constructor(x,y,e) {
-        super();
-        Lk.a(this.g,{class: "relajso"});
+        super("relajso");
 
         this.x = x;
         this.y = y;
@@ -341,12 +368,7 @@ class LkRelajs extends LkPeco {
                 pt.klapo.removeAttribute("transform");
             }
         }
-/*
-        const kerno = this.g.querySelector(".kerno");
-        if (kerno) {
-            Lk.a(kerno, {d: `M${x+40} ${ys}L${xw-fend} ${ys}`});
-        }
-        */
+
     }
 }
 
@@ -360,16 +382,11 @@ class NEKrado extends Krado {
         // relajso
         const rel = new LkRelajs(0,20,'x');
         rel.ponto(75,true);
-        this.aldonu(rel);
         rel.g.addEventListener("click",() => rel.ŝaltu(!rel.aktiva));
 
-        this.poluso();
-        this.vdrato(75,10,20);
-        this.vdrato(75,45,50);
+        const drat = new LkDrato(75,90,6,10,30,45,95);
+        this.aldonu(rel, drat)
 
-        this.hdrato(75,95,15);
-        //this.vdrato(90,10,90);
-        //this.kontakto('',98,96);
     };
 }
 
@@ -387,15 +404,9 @@ class KAJKrado extends Krado {
         const rel2 = new LkRelajs(0,60,'y');
         rel2.ponto(75,false);
 
-        this.aldonu(rel1,rel2);
+        const drat = new LkDrato(75,90,6,10,30,45,70,85,95);
+        this.aldonu(rel1,rel2,drat)
 
-        this.poluso();
-        this.vdrato(75,10,20);
-        this.vdrato(75,45,25);
-        this.vdrato(75,85,10);
-
-        this.hdrato(75,95,15);
-        //this.kontakto('',98,96);
     };
 }
 
@@ -413,18 +424,11 @@ class NKAJKrado extends Krado {
         const rel2 = new LkRelajs(0,60,'y');
         rel2.ponto(75,true);
 
-        this.aldonu(rel1,rel2);
+        const drat1 = new LkDrato(60,90,6,10,30,45,95);
+        const drat2 = new LkDrato(75,90,6,10,70,85,95);
 
-        this.poluso(60);
-        this.vdrato(60,10,20);
-        this.vdrato(60,45,50);
+        this.aldonu(rel1,rel2,drat1,drat2);
 
-        this.poluso();
-        this.vdrato(75,10,60);
-        this.vdrato(75,85,10);
-
-        this.hdrato(60,95,30);
-        //this.kontakto('',98,96);
     }
 }
 
@@ -442,18 +446,11 @@ class AŬKrado extends Krado {
         const rel2 = new LkRelajs(0,60,'y');
         rel2.ponto(75,false);
 
-        this.aldonu(rel1,rel2);
+        const drat1 = new LkDrato(60,90,6,10,30,45,95);
+        const drat2 = new LkDrato(75,90,6,10,70,85,95);
 
-        this.poluso(60);
-        this.vdrato(60,10,20);
-        this.vdrato(60,45,50);
+        this.aldonu(rel1,rel2,drat1,drat2);
 
-        this.poluso();
-        this.vdrato(75,10,60);
-        this.vdrato(75,85,10);
-
-        this.hdrato(60,95,30);
-        //this.kontakto('',98,96);
     }
 }
 
@@ -472,15 +469,10 @@ class NEKKrado extends Krado {
         const rel2 = new LkRelajs(0,60,'y');
         rel2.ponto(75,true);
 
-        this.aldonu(rel1,rel2);
+        const drat = new LkDrato(75,90,6,10,30,45,70,85,95);
 
-        this.poluso();
-        this.vdrato(75,10,20);
-        this.vdrato(75,45,25);
-        this.vdrato(75,85,10);
+        this.aldonu(rel1,rel2,drat);
 
-        this.hdrato(75,95,15);
-        //this.kontakto('',98,96);
     };
 }
 
@@ -502,20 +494,10 @@ class EKVKrado extends Krado {
         rel2.ponto(60,true);
         rel2.ponto(75,false);
 
-        this.aldonu(rel1,rel2);
+        const drat1 = new LkDrato(60,90,6,10,30,45,70,85,95);
+        const drat2 = new LkDrato(75,90,6,10,30,45,70,85,95);
 
-        this.poluso(60);
-        this.vdrato(60,10,20);
-        this.vdrato(60,45,25);
-        this.vdrato(60,85,10);
-
-        this.poluso();
-        this.vdrato(75,10,20);
-        this.vdrato(75,45,25);
-        this.vdrato(75,85,10);
-
-        this.hdrato(60,95,30);
-        //this.kontakto('',98,96);
+        this.aldonu(rel1,rel2,drat1,drat2);
     }
 }
 
@@ -535,20 +517,11 @@ class XAŬKrado extends Krado {
         rel2.ponto(60,false);
         rel2.ponto(75,true);
 
-        this.aldonu(rel1,rel2);
+        const drat1 = new LkDrato(60,90,6,10,30,45,70,85,95);
+        const drat2 = new LkDrato(75,90,6,10,30,45,70,85,95);
 
-        this.poluso(60);
-        this.vdrato(60,10,20);
-        this.vdrato(60,45,25);
-        this.vdrato(60,85,10);
+        this.aldonu(rel1,rel2,drat1,drat2);
 
-        this.poluso();
-        this.vdrato(75,10,20);
-        this.vdrato(75,45,25);
-        this.vdrato(75,85,10);
-
-        this.hdrato(60,95,30);
-        //this.kontakto('',98,96);
     }
 }
 
