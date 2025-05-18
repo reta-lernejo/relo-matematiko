@@ -186,10 +186,15 @@ class Krado {
     /** ligas eliron de unu krado (plato) al eniro de apuda krado */
     static ligu(krado_el,i_el,krado_en,i_en) {
         // por kalkulado de aktiveco ni iras de eliroj (maldekstre) al eniroj (dekstren)
-        krado_el.el[i_el].ligoj.push(krado_en.en[i_en]);
+        const eliro = krado_el.el[i_el];
+        const eniro = krado_en.en[i_en];
+        eliro.ligoj.push(eniro);
         // ligu en ambaŭ direktoj? - tion ni bezonus nur se eniro havus
         // pluraj fontojn kaj devus evtl. kombini tiujn
         // krado_en.en[i_en].ligo = krado_el.el[i_el];
+
+        // ĉu aktiva en momento de ligo?
+        if (eliro.aktiva) eniro.ŝaltu(true);
     }
 
     nomo(nom) {
@@ -781,7 +786,7 @@ class EnirKrado extends Krado {
             drat.g.append(d);
 
             kontakt.addEventListener("click",() => {
-                console.log("klako sur "+(6-i));
+                console.log((drat.aktiva?"mal":"")+"ŝalti eniron "+(6-i));
                 drat.ŝaltu(!drat.aktiva);
             });
 
