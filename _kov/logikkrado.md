@@ -19,36 +19,56 @@ lanĉe(() => {
     SVG = new LkSVG(ĝi("#plato"));
 
     EN = new EnirKrado("EN");
-    EL = new ElirKrado("EL");
-    SVG.ŝovu(EL.g,350);
 
     NE = new NEKrado("NE");
+    Krado.ligu(EN,1,NE,0);
     SVG.ŝovu(NE.g,50,50);
 
-    ID = new IDKrado("ID");
-    SVG.ŝovu(ID.g,50,200);
-
-    KAJ = new KAJKrado("KAJ");   
-    SVG.ŝovu(KAJ.g,150,50);
-
-    NKAJ = new NKAJKrado("NKAJ");   
-    SVG.ŝovu(NKAJ.g,250,0);
-
-    AŬ = new AŬKrado("AŬ");   
+    AŬ = new AŬKrado("AŬ");
+    Krado.ligu(EN,2,AŬ,0);
+    Krado.ligu(EN,3,AŬ,1);
     SVG.ŝovu(AŬ.g,50,100);
 
-    NEK = new NEKKrado("NEK");   
+    ID = new IDKrado("ID");
+    Krado.ligu(EN,4,ID,0);
+    SVG.ŝovu(ID.g,50,200);
+
+    KAJ = new KAJKrado("KAJ");
+    Krado.ligu(NE,0,KAJ,0);
+    Krado.ligu(AŬ,0,KAJ,1);
+    SVG.ŝovu(KAJ.g,150,50);
+
+    NEK = new NEKKrado("NEK");
+    Krado.ligu(AŬ,0,NEK,0);
+    Krado.ligu(ID,0,NEK,1);
     SVG.ŝovu(NEK.g,150,150);
 
-    XAŬ = new XAŬKrado("XAŬ");   
+    NKAJ = new NKAJKrado("NKAJ");
+    Krado.ligu(KAJ,0,NKAJ,1);
+    SVG.ŝovu(NKAJ.g,250,0);
+
+    XAŬ = new XAŬKrado("XAŬ");
+    Krado.ligu(KAJ,0,XAŬ,0);
+    Krado.ligu(NEK,0,XAŬ,1);
     SVG.ŝovu(XAŬ.g,250,100);
 
-    EKV = new EKVKrado("EKV");   
+    EKV = new EKVKrado("EKV");
+    Krado.ligu(NEK,0,EKV,0);
     SVG.ŝovu(EKV.g,250,200);
 /*
     KXA = new KAJXAŬKrado("&/=1");
     SVG.ŝovu(KXA.g,350,50);
 */
+
+    EL = new ElirKrado("EL");
+    Krado.ligu(NKAJ,0,EL,0);
+    Krado.ligu(NKAJ,0,EL,1);
+    Krado.ligu(XAŬ,0,EL,2);
+    Krado.ligu(XAŬ,0,EL,3);
+    Krado.ligu(EKV,0,EL,4);
+    Krado.ligu(EKV,0,EL,5);
+    SVG.ŝovu(EL.g,350);
+
     SVG.svg.append(EN.g,EL.g,NE.g,ID.g,KAJ.g,NKAJ.g,AŬ.g,NEK.g,XAŬ.g,EKV.g);
 });
 
@@ -59,5 +79,5 @@ lanĉe(() => {
     version="1.1" 
     xmlns="http://www.w3.org/2000/svg" 
     xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600" viewBox="0 0 400 300">
-    <rect width="400" height="300" stroke="black" fill="none"/>
+    <rect width="400" height="300" stroke="none" rx="5" fill="silver"/>
 </svg>
