@@ -241,13 +241,38 @@ class LkPeco {
         if (e) {
             const t = Lk.e("text",{
                 x: x+.5,
-                y: y+11,
-                "font-size": 10
+                y: y+11
+                //"font-size": 10
             },e);        
             this.g.append(t);
         }      
         return c;     
     }
+
+    lumo(x,y,e) {
+        const gl = Lk.e("g",{
+            class: "lumo"
+        });
+
+        const c = Lk.e("circle",{
+            class: "lumo",
+            cx: x,
+            cy: y,
+            r: 3.5
+        });   
+        gl.append(c);
+        if (e) {
+            const t = Lk.e("text",{
+                x: x,
+                y: y,
+                class: "lumo"
+            },e);        
+            gl.append(t);
+        }   
+        this.g.append(gl)   
+        return gl;     
+    }
+
 
     // aktiva = true ŝanĝu en staton, en kiu trafluas elektro
     // aktiva = false, ŝaltu en la senelektran staton
@@ -460,10 +485,10 @@ class IDKrado extends Krado {
         // havi konekton al la maso de la enira lumo
         // tiel por lumigi ni ne devas kotnroli tra ĉiuj sekvaj
         // konektoj ĉu ni havas maskonekton
-        const rel = new LkRelajs(false,0,20,'x');
+        const rel = new LkRelajs(false,0,20);
         rel.ponto(75,false);
-        const drat = new LkDrato(true,75,90,6,10,25,40,45);
-        const eliro = new LkEliro(true,90,20,null,45);
+        const drat = new LkDrato(false,75,90,6,10,25,40,45);
+        const eliro = new LkEliro(false,90,20,null,45);
 
         rel.reago = () => {
             //rel.ŝaltu(!rel.aktiva);
@@ -484,7 +509,7 @@ class NEKrado extends Krado {
         this.nomo("NE");
 
         // relajso
-        const rel = new LkRelajs(false,0,20,'x');
+        const rel = new LkRelajs(false,0,20);
         rel.ponto(75,true);
         const drat = new LkDrato(true,75,90,6,10,25,40,45);
         const eliro = new LkEliro(true,90,20,null,45);
@@ -508,10 +533,10 @@ class KAJKrado extends Krado {
         this.nomo("KAJ");
 
         // relajso 1
-        const rel1 = new LkRelajs(false,0,20,'x');
+        const rel1 = new LkRelajs(false,0,20);
         rel1.ponto(75,false);
         // relajso 2
-        const rel2 = new LkRelajs(false,0,70,'y');
+        const rel2 = new LkRelajs(false,0,70);
         rel2.ponto(75,false);
 
         const drat = new LkDrato(false,75,90,6,10,25,40,75,90,95);
@@ -542,10 +567,10 @@ class NKAJKrado extends Krado {
         this.nomo("NKAJ");
 
         // relajso 1
-        const rel1 = new LkRelajs(false,0,20,'x');
+        const rel1 = new LkRelajs(false,0,20);
         rel1.ponto(60,true);
         // relajso 2
-        const rel2 = new LkRelajs(false,0,70,'y');
+        const rel2 = new LkRelajs(false,0,70);
         rel2.ponto(75,true);
 
         const drat1 = new LkDrato(true,60,90,6,10,25,40,95);
@@ -576,11 +601,11 @@ class AŬKrado extends Krado {
         this.nomo("AŬ");
 
         // relajso 1
-        const rel1 = new LkRelajs(false,0,20,'x');
+        const rel1 = new LkRelajs(false,0,20);
         rel1.ponto(60,false);
 
         // relajso 2
-        const rel2 = new LkRelajs(false,0,70,'y');
+        const rel2 = new LkRelajs(false,0,70);
         rel2.ponto(75,false);
 
         const drat1 = new LkDrato(false,60,90,6,10,25,40,95);
@@ -612,11 +637,11 @@ class NEKKrado extends Krado {
         this.nomo("NEK");
 
         // relajso 1
-        const rel1 = new LkRelajs(false,0,20,'x');
+        const rel1 = new LkRelajs(false,0,20);
         rel1.ponto(75,true);
 
         // relajso 2
-        const rel2 = new LkRelajs(false,0,70,'y');
+        const rel2 = new LkRelajs(false,0,70);
         rel2.ponto(75,true);
 
         const drat = new LkDrato(false,75,90,6,10,25,40,75,90,95);
@@ -647,12 +672,12 @@ class EKVKrado extends Krado {
         this.nomo("EKV");
 
         // relajso 1
-        const rel1 = new LkRelajs(false,0,20,'x');
+        const rel1 = new LkRelajs(false,0,20);
         rel1.ponto(60,true);
         rel1.ponto(75,false);
 
         // relajso 2
-        const rel2 = new LkRelajs(false,0,70,'y');
+        const rel2 = new LkRelajs(false,0,70);
         rel2.ponto(60,true);
         rel2.ponto(75,false);
 
@@ -686,12 +711,12 @@ class XAŬKrado extends Krado {
         this.nomo("XAŬ");
 
         // relajso 1
-        const rel1 = new LkRelajs(false,0,20,'x');
+        const rel1 = new LkRelajs(false,0,20);
         rel1.ponto(60,true);
         rel1.ponto(75,false);
 
         // relajso 2
-        const rel2 = new LkRelajs(false,0,70,'y');
+        const rel2 = new LkRelajs(false,0,70);
         rel2.ponto(60,false);
         rel2.ponto(75,true);
 
@@ -726,13 +751,13 @@ class KAJXAŬKrado extends Krado {
         this.nomo("&/=1");
 
         // relajso 1
-        const rel1 = new LkRelajs(false,0,20,'x');
+        const rel1 = new LkRelajs(false,0,20);
         rel1.ponto(50,false);
         rel1.ponto(65,true);
         rel1.ponto(80,false);
 
         // relajso 2
-        const rel2 = new LkRelajs(false,0,70,'y');
+        const rel2 = new LkRelajs(false,0,70);
         rel2.ponto(50,false);
         rel2.ponto(65,false);
         rel2.ponto(80,true);
@@ -772,26 +797,92 @@ class KAJXAŬKrado extends Krado {
 class EnirKrado extends Krado {
     constructor(id) {
         super(id,"logikkrado eniroj",50,300);
+        this.kunigoj = [];
+
+        const tx = Lk.e("text",{
+            x: 2,
+            y: 11
+        },"x");
+        const ty = Lk.e("text",{
+            x: 41,
+            y: 61
+        },"y");
+        this.g.append(tx,ty);
 
         for (let i=5; i>=0; i--) {
             const drat = new LkPeco(false);
             const x = 7+i*7;
             const y0 = 10+(i+1)%2*50;
             const y = 270-i*50;
-            const kontakt = drat.kontakto(x,y0);
+            const lum = drat.lumo(x,y0-2,3-Math.floor((i)/2));
             //dratoj.kontakto(48,y);
             const d = Lk.e("path",{
                 d: `M${x} ${y0+2}L${x} ${y}L50 ${y}`
             });
             drat.g.append(d);
 
-            kontakt.addEventListener("click",() => {
+            lum.addEventListener("click",() => {
                 console.log((drat.aktiva?"mal":"")+"ŝalti eniron "+(6-i));
-                drat.ŝaltu(!drat.aktiva);
+
+                const aktiva = !drat.aktiva;
+                drat.ŝaltu(aktiva);
+                this.kunigoj.forEach((k) => {
+                    if (k.has(drat.index)) {
+                        // ŝaltu ankaŭ ĉiujn kunigitajn dratojn (troveblaj per indekso en this.el)
+                        k.forEach((d) => {
+                            if (d != drat.index) this.el[d].ŝaltu(aktiva);
+                        })
+                    }
+                });
+
             });
 
+            // por trakti kunigojn ni devas scii 
+            // la eliro-numerojn de la dratoj
+            drat.index = 5-i; 
             this.eliroj(drat);
         }
+    }
+
+    kunigu(i,j=i+2) {
+        // se unu el la du jam estas kunigita kun alia,
+        // aldonu tie
+        let added = false;
+        for (const k of this.kunigoj) {
+            if (k.has(i)) {
+                k.add(j);
+                added = true;
+                break;
+            } else if (k.has(j)) {
+                k.add(i);
+                added = true;
+                break;
+            }
+        }
+        // se ne, kreu novan kunigon kiel Set-objekto
+        if (!added) this.kunigoj.push(new Set([i,j]));
+
+        // tio kondukus al senfina ciklo:
+        // this.el[i].ligoj.push(this.el[j]);
+        // this.el[j].ligoj.push(this.el[i]);
+
+        const xi = 7+i*7;
+        const y = 16+(i+1)%2*50;
+        const xj = 7+j*7;
+        const c1 = Lk.e("circle",{
+            cx: xi,
+            cy: y,
+            r: 1
+        });
+        const c2 = Lk.e("circle",{
+            cx: xj,
+            cy: y,
+            r: 1
+        });
+        const l = Lk.e("path",{
+            d: `M${xi} ${y}Q${(xi+xj)/2} ${y+3} ${xj} ${y}`
+        });
+        this.g.append(c1,c2,l);
     }
 }
 
@@ -806,8 +897,8 @@ class ElirKrado extends Krado {
             const d = Lk.e("path",{
                 d: `M0 ${y}L30 ${y}L30 290`
             });
-            drat.kontakto(x,y);
             drat.g.append(d);
+            drat.lumo(x,y);
 
             this.eniroj(drat);
         }
