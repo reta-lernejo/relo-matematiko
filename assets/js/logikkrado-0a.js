@@ -195,6 +195,24 @@ class LkPeco {
         });
     }
 
+    kontakto(x=2,y=20,e) {
+        const c = Lk.e("circle",{
+            class: "kontakto",
+            cx: x,
+            cy: y,
+            r: 2
+        });   
+        this.g.append(c);
+        if (e) {
+            const t = Lk.e("text",{
+                x: x+.5,
+                y: y+11,
+                "font-size": 10
+            },e);        
+            this.g.append(t);
+        }           
+    }
+
     // aktiva = true ŝanĝu en staton, en kiu trafluas elektro
     // aktiva = false, ŝaltu en la senelektran staton
     ŝaltu(aktiva=true) {
@@ -212,30 +230,11 @@ class LkEliro extends LkPeco {
     constructor(aktiva,x=90,y1=20,y2=70,yd=95,e="") {
         super(aktiva);
 
-        let d = `M96 ${y1}L${x} ${y1}`
-        const c1 = Lk.e("circle",{
-            class: "kontakto",
-            cx: 98,
-            cy: y1,
-            r: 2
-        });  
-        if (e) {
-            const t = Lk.e("text",{
-                x: x+.5,
-                y: y1+11,
-                "font-size": 10
-            },e);        
-            this.g.append(t);
-        }
+        //this.kontakto(98,y1.e);
+        let d = `M100 ${y1}L${x} ${y1}`;
         if (y2) {
-            d += `L${x} ${y2}L96 ${y2}M${x} ${y2}`;
-            const c2 = Lk.e("circle",{
-                class: "kontakto",
-                cx: 98,
-                cy: y2,
-                r: 2
-            });            
-            this.g.append(c2);
+            d += `L${x} ${y2}L100 ${y2}M${x} ${y2}`;
+            //this.kontakto(98,y2);
         } ;
         d += `L${x} ${yd}`;
         
@@ -243,7 +242,7 @@ class LkEliro extends LkPeco {
             d: d
         });
 
-        this.g.append(p,c1);
+        this.g.append(p);
     }
 }
 
@@ -255,34 +254,14 @@ class LkHDrato extends LkPeco {
         const p = Lk.e("line",{
             x1: 4,
             y1: y,
-            x2: 96,
+            x2: 100,
             y2: y
         });
-        // kotnaktoj
-        const c1 = Lk.e("circle",{
-            class: "kontakto",
-            cx: 2,
-            cy: y,
-            r: 2
-        });  
-        const c2 = Lk.e("circle",{
-            class: "kontakto",
-            cx: 98,
-            cy: y,
-            r: 2
-        });  
-        if (e) {
-            const t = Lk.e("text",{
-                x: x+.5,
-                y: y+11,
-                "font-size": 10
-            },e);        
-            this.g.append(t);
-        }
+        // kontakto
+        this.kontakto(2,y,e)
+        //this.kontakto(98,y);        
 
-        this.g.append(c1,c2,p);
-
-
+        this.g.append(p);
     }
 }
 
@@ -345,17 +324,7 @@ class LkRelajs extends LkPeco {
         this.aktiva = false;
 
         // kontakto
-        const t = Lk.e("text",{
-            x: x+3,
-            y: y+10,
-            "font-size": 10
-        },e);
-        const c = Lk.e("circle",{
-            class: "kontakto",
-            cx: x+3,
-            cy: y,
-            r: 2,
-        });
+        this.kontakto(x+2,y,e);
         // bobeno
         const r = Lk.e("rect",{
             x: x+20,
@@ -376,7 +345,7 @@ class LkRelajs extends LkPeco {
             x2: x+34,
             y2: y+24
         })
-        this.g.append(t,c,r,p,l);
+        this.g.append(r,p,l);
     }
 
     // ŝaltilo de la relajso
@@ -727,3 +696,48 @@ class KAJXAŬKrado extends Krado {
     }
 }
 
+class EnirKrado extends Krado {
+    constructor(id) {
+        super(id,"logikkrado eniroj",50,300);
+
+        const dratoj = new LkPeco(false);
+        for (let i=0; i<6; i++) {
+            const x = 7+i*7;
+            const y = 270-i*50;
+            dratoj.kontakto(x,10);
+            //dratoj.kontakto(48,y);
+            const d = Lk.e("path",{
+                d: `M${x} 12L${x} ${y}L50 ${y}`
+            });
+            this.g.append(d);
+        }
+        this.aldonu(dratoj);
+    }
+}
+
+class ElirKrado extends Krado {
+    constructor(id) {
+        super(id,"logikkrado eliroj",50,300);
+        const dratoj = new LkPeco(false);
+        for (let i=0; i<6; i++) {
+            const y = 270-i*50;
+            // de maldekstre al la maso
+            const d = Lk.e("path",{
+                d: `M0 ${y}L20 ${y}L20 290`
+            });
+            dratoj.kontakto(10,y);
+            this.g.append(d);
+        }
+        // maso
+        const m = Lk.e("line",{
+            class: "maso",
+            x1: 16,
+            y1: 290,
+            x2: 24,
+            y2: 290
+        });
+        this.g.append(m)
+
+        this.aldonu(dratoj);
+    }
+}
