@@ -19,6 +19,10 @@ lanĉe(() => {
     SVG = new LkSVG(ĝi("#plato"));
 
     NE = new NEKrado("NE");
+    SVG.ŝovu(NE.g,0,50);
+
+    ID = new IDKrado("ID");
+    SVG.ŝovu(ID.g,0,200);
 
     KAJ = new KAJKrado("KAJ");   
     SVG.ŝovu(KAJ.g,100,50);
@@ -41,7 +45,7 @@ lanĉe(() => {
     KXA = new KAJXAŬKrado("&/=1");
     SVG.ŝovu(KXA.g,300,50);
 
-    SVG.svg.append(NE.g,KAJ.g,NKAJ.g,AŬ.g,NEK.g,XAŬ.g,EKV.g,KXA.g);
+    SVG.svg.append(NE.g,ID.g,KAJ.g,NKAJ.g,AŬ.g,NEK.g,XAŬ.g,EKV.g,KXA.g);
 });
 
 </script>
