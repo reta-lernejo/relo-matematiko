@@ -1,4 +1,57 @@
 
+
+class Lk {
+
+    /** Kreas SVG-elementon kun atributoj
+     * @param nomo elementnomo, ekz-e 'div'
+     * @param atributoj objekto kies kampoj estas la atributnomoj kaj ties valoroj
+     */
+    static e(nomo, atributoj, teksto) {
+        const ns = "http://www.w3.org/2000/svg";
+        const el = document.createElementNS(ns, nomo);
+        if (atributoj) {
+            for (const [atr,val] of Object.entries(atributoj)) {
+                el.setAttribute(atr,val);
+            }
+        };
+        if (teksto) el.textContent = teksto;
+        return el;
+    }
+
+
+    /**
+     * Aldonas aŭ ŝanĝas atributojn de SVG-DOM-elemento
+     * 
+     * @param elemento la DOM-elemento 
+     * @param atributoj objekto kies kampoj estas la atributnomoj kaj ties valoroj
+     * @returns 
+     */
+    static a(elemento, atributoj) {
+        if (atributoj) {
+            for (const [atr,val] of Object.entries(atributoj)) {
+                elemento.setAttribute(atr,val);
+            }
+        };
+        return elemento;
+    }
+
+
+    /**
+     * Aldonas idon al SVG-elemento. Se jam ekzistas tia kun
+     * la donita nomo, tion ni forigos unue
+     * @param {*} elm 
+     * @param {*} id 
+     * @param {*} nom 
+     */
+    static ido(elm, id, nom) {
+        const malnov = document.getElementById(nom);
+        if (malnov) malnov.remove();
+
+        id.setAttribute("id",nom);
+        elm.append(id);
+    }
+}
+
 /**
  * Klaso kiu tenas la elementon <svg> de vektordesegnaĵo kaj ofertas kelkajn aldonajn utilfunkciojn.
  */
@@ -88,56 +141,65 @@ class LkSVG {
 
 }
 
-
-class Lk {
-
-    /** Kreas SVG-elementon kun atributoj
-     * @param nomo elementnomo, ekz-e 'div'
-     * @param atributoj objekto kies kampoj estas la atributnomoj kaj ties valoroj
-     */
-    static e(nomo, atributoj, teksto) {
-        const ns = "http://www.w3.org/2000/svg";
-        const el = document.createElementNS(ns, nomo);
-        if (atributoj) {
-            for (const [atr,val] of Object.entries(atributoj)) {
-                el.setAttribute(atr,val);
-            }
-        };
-        if (teksto) el.textContent = teksto;
-        return el;
+/**
+ * Panelo estas la bazo sur kiu estas aranĝitaj la diversaj kradoj kiel en puzlo
+ * Ĝi ankaŭ zorgas pri metado, forigo kaj kunligo de apudaj kontaktoj
+ */
+class LkPanelo extends LkSVG {
+    constructor(svg) {
+        super(svg);
+        // ni uzas aranĝon de kampoj kun grandeco 50x50
+        const vb = svg.getAttribute("viewBox").split(" ");
+        this.vert = Math.ceil((vb[2]-vb[0])/50);
+        this.horz = Math.ceil((vb[3]-vb[1])/50);
+        // preparu aranĝon horz x vert;
+        this.metoj = Array.from({ length: this.horz }, () => Array(this.vert).fill(undefined));
     }
 
+    metu(krado,i,j) {
+        // KOREKTU: append nur se ne jam troviĝas        
+        this.svg.append(krado.g);
+        // ŝovu la kradon al la ĝusta loko en SVG
+        this.ŝovu(krado.g,50*i,50*j);
 
-    /**
-     * Aldonas aŭ ŝanĝas atributojn de SVG-DOM-elemento
-     * 
-     * @param elemento la DOM-elemento 
-     * @param atributoj objekto kies kampoj estas la atributnomoj kaj ties valoroj
-     * @returns 
-     */
-    static a(elemento, atributoj) {
-        if (atributoj) {
-            for (const [atr,val] of Object.entries(atributoj)) {
-                elemento.setAttribute(atr,val);
+        // KOREKTU: getBBox ne funkcias se la SVG ne estas jam
+        // videbla, ni do havu la dimensiojn de Kradoj en la objekt-atributoj!
+        const formato = krado.formato();
+        const di = formato[0]/50;
+        const dj = formato[1]/50;
+
+        for (let _i = i; _i<i+di; _i++) {
+            for (let _j = j; _j<j+dj; _j++) {
+                this.metoj[_i,_j] = krado;
             }
-        };
-        return elemento;
+            /*
+            // kunigu kun apudaj kradoj maldekstre 
+            if (j>0) {
+                const md = this.metoj[_i,j];
+                // KOREKTU: ni devas eltrovi unu la indekson de la eliro!
+                // 0 estas provizora supozo
+                if (md) Krado.ligu(md.el[0],krado.en[_i-i]);
+            }
+            // kaj dekstre
+            if (j+dj<this.vert) {
+                const d = this.metoj[_i,j+dj];
+                // KOREKTU: ni devas eltrovi unu la indekson de la eniro!
+                // 0 estas provizora supozo
+                if (d) Krado.ligu(krado.el[_i-i],d.en[0]);
+            }
+            */
+        }
     }
 
-
-    /**
-     * Aldonas idon al SVG-elemento. Se jam ekzistas tia kun
-     * la donita nomo, tion ni forigos unue
-     * @param {*} elm 
-     * @param {*} id 
-     * @param {*} nom 
-     */
-    static ido(elm, id, nom) {
-        const malnov = document.getElementById(nom);
-        if (malnov) malnov.remove();
-
-        id.setAttribute("id",nom);
-        elm.append(id);
+    forigu() {
+        for (let _i = i; _i<i+di; _i++) {
+            for (let _j = j; _j<j+dj; _j++) {
+                this.metoj[_i,_j] = krado;
+            }
+            // forigu kunigojn en la linio _i
+        }
+        // forigu la pecon el svg
+        this.svg.remove(krado);
     }
 }
 
@@ -160,6 +222,11 @@ class Krado {
             rx: 5,
         });
         this.g.append(r)
+    }
+
+    formato() {
+        const plato = this.g.querySelector(".plato");
+        return([plato.getAttribute("width"),plato.getAttribute("height")]);
     }
 
     /** aldonas pecojn al la krado */
