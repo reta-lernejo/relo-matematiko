@@ -18,69 +18,69 @@ https://de.wikipedia.org/wiki/Logikgatter
 lanĉe(() => {
     panelo = new LkPanelo(ĝi("#plato"));
 
-    EN = new EnirKrado("EN");
+    EN = new EnirPlato("EN");
     EN.kunigu(0);
     EN.kunigu(1);
     EN.kunigu(2);
     EN.kunigu(3);
     panelo.metu(EN,0,0);
 
-    NE = new NEKrado("NE");
-    //Krado.ligu(EN,1,NE,0);
+    NE = new NEPlato("NE");
+    //Plato.ligu(EN,1,NE,0);
     //SVG.ŝovu(NE.g,50,50);
     panelo.metu(NE,1,1);
 
-    AŬ = new AŬKrado("AŬ");
-    //Krado.ligu(EN,2,AŬ,0);
-    //Krado.ligu(EN,3,AŬ,1);
+    AŬ = new AŬPlato("AŬ");
+    //Plato.ligu(EN,2,AŬ,0);
+    //Plato.ligu(EN,3,AŬ,1);
     //SVG.ŝovu(AŬ.g,50,100);
     panelo.metu(AŬ,1,2);
 
-    ID = new IDKrado("ID");
-    // Krado.ligu(EN,4,ID,0);
+    ID = new IDPlato("ID");
+    // Plato.ligu(EN,4,ID,0);
     // SVG.ŝovu(ID.g,50,200);
     panelo.metu(ID,1,4);
 
-    KAJ = new KAJKrado("KAJ");
-    //Krado.ligu(NE,0,KAJ,0);
-    //Krado.ligu(AŬ,0,KAJ,1);
+    KAJ = new KAJPlato("KAJ");
+    //Plato.ligu(NE,0,KAJ,0);
+    //Plato.ligu(AŬ,0,KAJ,1);
     //SVG.ŝovu(KAJ.g,150,50);
     panelo.metu(KAJ,3,1);
 
-    NEK = new NEKKrado("NEK");
-    //Krado.ligu(AŬ,0,NEK,0);
-    //Krado.ligu(ID,0,NEK,1);
+    NEK = new NEKPlato("NEK");
+    //Plato.ligu(AŬ,0,NEK,0);
+    //Plato.ligu(ID,0,NEK,1);
     //SVG.ŝovu(NEK.g,150,150);
     panelo.metu(NEK,3,3);
 
-    NKAJ = new NKAJKrado("NKAJ");
-    //Krado.ligu(KAJ,0,NKAJ,1);
+    NKAJ = new NKAJPlato("NKAJ");
+    //Plato.ligu(KAJ,0,NKAJ,1);
     //SVG.ŝovu(NKAJ.g,250,0);
     panelo.metu(NKAJ,5,0);
 
-    XAŬ = new XAŬKrado("XAŬ");
-    //Krado.ligu(KAJ,0,XAŬ,0);
-    //Krado.ligu(NEK,0,XAŬ,1);
+    XAŬ = new XAŬPlato("XAŬ");
+    //Plato.ligu(KAJ,0,XAŬ,0);
+    //Plato.ligu(NEK,0,XAŬ,1);
     //SVG.ŝovu(XAŬ.g,250,100);
     panelo.metu(XAŬ,5,2);
 
-    EKV = new EKVKrado("EKV");
-    //Krado.ligu(NEK,0,EKV,0);
+    EKV = new EKVPlato("EKV");
+    //Plato.ligu(NEK,0,EKV,0);
     //SVG.ŝovu(EKV.g,250,200);
     panelo.metu(EKV,5,4);
 
 /*
-    KXA = new KAJXAŬKrado("&/=1");
+    KXA = new KAJXAŬPlato("&/=1");
     SVG.ŝovu(KXA.g,350,50);
 */
 
-    EL = new ElirKrado("EL");
-    //Krado.ligu(NKAJ,0,EL,0);
-    //Krado.ligu(NKAJ,0,EL,1);
-    //Krado.ligu(XAŬ,0,EL,2);
-    //Krado.ligu(XAŬ,0,EL,3);
-    //Krado.ligu(EKV,0,EL,4);
-    //Krado.ligu(EKV,0,EL,5);
+    EL = new ElirPlato("EL");
+    //Plato.ligu(NKAJ,0,EL,0);
+    //Plato.ligu(NKAJ,0,EL,1);
+    //Plato.ligu(XAŬ,0,EL,2);
+    //Plato.ligu(XAŬ,0,EL,3);
+    //Plato.ligu(EKV,0,EL,4);
+    //Plato.ligu(EKV,0,EL,5);
     //SVG.ŝovu(EL.g,350);
     panelo.metu(EL,7,0);
 

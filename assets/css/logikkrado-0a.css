@@ -1,33 +1,33 @@
-.logikkrado .plato {
+.logikplato .plato {
     fill: rgb(181, 232, 255);
     stroke-width: 0.5;
     stroke: gray;
 }
 
-.logikkrado rect {
+.logikplato rect {
     stroke: black;
     fill: none;
     pointer-events: all;
 }
 
-.logikkrado path {
+.logikplato path {
     stroke: black;
     stroke-linecap: round;
     fill: none;
 }
 
-.logikkrado line {
+.logikplato line {
     stroke: black;
     stroke-linecap: round;
     fill: none;
 }
 
-.logikkrado circle {
+.logikplato circle {
     stroke: black;
     fill: none;
 }
 
-.logikkrado line.maso {
+.logikplato line.maso {
     stroke: black;
     stroke-linecap: butt;
     stroke-width: 2;

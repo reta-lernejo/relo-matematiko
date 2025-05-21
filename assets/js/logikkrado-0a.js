@@ -142,7 +142,7 @@ class LkSVG {
 }
 
 /**
- * Panelo estas la bazo sur kiu estas aranĝitaj la diversaj kradoj kiel en puzlo
+ * Panelo estas la bazo sur kiu estas aranĝitaj la diversaj platoj kiel en puzlo
  * Ĝi ankaŭ zorgas pri metado, forigo kaj kunligo de apudaj kontaktoj
  */
 class LkPanelo extends LkSVG {
@@ -152,59 +152,69 @@ class LkPanelo extends LkSVG {
         const vb = svg.getAttribute("viewBox").split(" ");
         this.vert = Math.ceil((vb[2]-vb[0])/50);
         this.horz = Math.ceil((vb[3]-vb[1])/50);
-        // preparu aranĝon horz x vert;
+        // preparu aranĝon horz (horizontaloj) x vert (vertikaloj/kolumnoj);
         this.metoj = Array.from({ length: this.horz }, () => Array(this.vert).fill(undefined));
     }
 
-    metu(krado,i,j) {
+    /**
+     * 
+     * @param {*} plato 
+     * @param {*} j kolumno
+     * @param {*} i linio
+     */
+    metu(plato,j,i) {
         // KOREKTU: append nur se ne jam troviĝas        
-        this.svg.append(krado.g);
-        // ŝovu la kradon al la ĝusta loko en SVG
-        this.ŝovu(krado.g,50*i,50*j);
+        this.svg.append(plato.g);
+        // ŝovu la platon al la ĝusta loko en SVG
+        this.ŝovu(plato.g,50*j,50*i);
 
-        // KOREKTU: getBBox ne funkcias se la SVG ne estas jam
-        // videbla, ni do havu la dimensiojn de Kradoj en la objekt-atributoj!
-        const formato = krado.formato();
-        const di = formato[0]/50;
-        const dj = formato[1]/50;
+        const formato = plato.formato();
+        const dj = formato[0]/50; // larĝo
+        const di = formato[1]/50; // alto
 
         for (let _i = i; _i<i+di; _i++) {
             for (let _j = j; _j<j+dj; _j++) {
-                this.metoj[_i,_j] = krado;
+                // ni memoras sur kiu kampo [_i,_j] de la panelo
+                // estas kiu kampo [_i-i,_j-j] de la plato
+                // aparte la i-koordinaton ni bezonas por identigi apudajn
+                // enirojn/eliroj por kunigo
+                this.metoj[_i][_j] = [plato,_i-i,_j-j];
             }
-            /*
-            // kunigu kun apudaj kradoj maldekstre 
+            // kunigu kun apudaj platoj maldekstre 
             if (j>0) {
-                const md = this.metoj[_i,j];
-                // KOREKTU: ni devas eltrovi unu la indekson de la eliro!
-                // 0 estas provizora supozo
-                if (md) Krado.ligu(md.el[0],krado.en[_i-i]);
+                const najbaro = this.metoj[_i][j-1];
+                if (najbaro) {
+                    const np = najbaro[0];
+                    const ni = najbaro[1];
+                    Plato.ligu(np,ni,plato,_i-i);
+                };
             }
             // kaj dekstre
             if (j+dj<this.vert) {
-                const d = this.metoj[_i,j+dj];
-                // KOREKTU: ni devas eltrovi unu la indekson de la eniro!
-                // 0 estas provizora supozo
-                if (d) Krado.ligu(krado.el[_i-i],d.en[0]);
+                const najbaro = this.metoj[_i][j+dj];
+                if (najbaro) {
+                    const np = najbaro[0];
+                    const ni = najbaro[1];
+                    Plato.ligu(plato,_i-i,np,ni);
+                }
             }
-            */
         }
     }
 
     forigu() {
         for (let _i = i; _i<i+di; _i++) {
             for (let _j = j; _j<j+dj; _j++) {
-                this.metoj[_i,_j] = krado;
+                this.metoj[_i][_j] = plato;
             }
             // forigu kunigojn en la linio _i
         }
         // forigu la pecon el svg
-        this.svg.remove(krado);
+        this.svg.remove(plato);
     }
 }
 
-class Krado {
-    constructor(id, klaso="logikkrado", w=100, h=100) {
+class Plato {
+    constructor(id, klaso="logikplato", w=100, h=100) {
         this.id = id;
         this.en = [];
         this.el = [];
@@ -229,12 +239,12 @@ class Krado {
         return([plato.getAttribute("width"),plato.getAttribute("height")]);
     }
 
-    /** aldonas pecojn al la krado */
+    /** aldonas pecojn al la plato */
     aldonu(...pecoj) {
         pecoj.forEach((p) => this.g.append(p.g));
     }
 
-    /** aldonas pecojn al la krado registrante ilin kiel eniroj laŭ la donita ordo */
+    /** aldonas pecojn al la plato registrante ilin kiel eniroj laŭ la donita ordo */
     eniroj(...pecoj) {
         pecoj.forEach((p,i) => {
             this.g.append(p.g);
@@ -242,7 +252,7 @@ class Krado {
         });
     }
 
-    /** aldonas pecojn al la krado registrante ilin kiel eliroj laŭ la donita ordo */
+    /** aldonas pecojn al la plato registrante ilin kiel eliroj laŭ la donita ordo */
     eliroj(...pecoj) {
         pecoj.forEach((p,i) => {
             this.g.append(p.g);
@@ -250,15 +260,15 @@ class Krado {
         });
     }
 
-    /** ligas eliron de unu krado (plato) al eniro de apuda krado */
-    static ligu(krado_el,i_el,krado_en,i_en) {
+    /** ligas eliron de unu plato (plato) al eniro de apuda plato */
+    static ligu(plato_el,i_el,plato_en,i_en) {
         // por kalkulado de aktiveco ni iras de eliroj (maldekstre) al eniroj (dekstren)
-        const eliro = krado_el.el[i_el];
-        const eniro = krado_en.en[i_en];
+        const eliro = plato_el.el[i_el];
+        const eniro = plato_en.en[i_en];
         eliro.ligoj.push(eniro);
         // ligu en ambaŭ direktoj? - tion ni bezonus nur se eniro havus
         // pluraj fontojn kaj devus evtl. kombini tiujn
-        // krado_en.en[i_en].ligo = krado_el.el[i_el];
+        // plato_en.en[i_en].ligo = plato_el.el[i_el];
 
         // ĉu aktiva en momento de ligo?
         if (eliro.aktiva) eniro.ŝaltu(true);
@@ -543,7 +553,7 @@ class LkRelajs extends LkPeco {
 }
 
 
-class IDKrado extends Krado {
+class IDPlato extends Plato {
     constructor(id) {
         super(id,undefined,100,50);
         this.nomo("ID");
@@ -570,7 +580,7 @@ class IDKrado extends Krado {
     };
 }
 
-class NEKrado extends Krado {
+class NEPlato extends Plato {
     constructor(id) {
         super(id,undefined,100,50);
         this.nomo("NE");
@@ -594,7 +604,7 @@ class NEKrado extends Krado {
 }
 
 
-class KAJKrado extends Krado {
+class KAJPlato extends Plato {
     constructor(id) {
         super(id);
         this.nomo("KAJ");
@@ -622,13 +632,13 @@ class KAJKrado extends Krado {
         };
 
         this.eniroj(rel1,rel2);
-        this.eliroj(eliro);
+        this.eliroj(eliro,eliro);
         this.aldonu(drat);
     };
 }
 
 
-class NKAJKrado extends Krado {
+class NKAJPlato extends Plato {
     constructor(id) {
         super(id);
         this.nomo("NKAJ");
@@ -657,12 +667,12 @@ class NKAJKrado extends Krado {
         };
 
         this.eniroj(rel1,rel2);
-        this.eliroj(eliro);
+        this.eliroj(eliro,eliro);
         this.aldonu(drat1,drat2);
     }
 }
 
-class AŬKrado extends Krado {
+class AŬPlato extends Plato {
     constructor(id) {
         super(id);
         this.nomo("AŬ");
@@ -687,18 +697,18 @@ class AŬKrado extends Krado {
 
         rel2.reago = () => {
             // rel2.ŝaltu(!rel2.aktiva);
-            drat2.ŝaltu(rel1.pontoj[0].fermita);
+            drat2.ŝaltu(rel2.pontoj[0].fermita);
             eliro.ŝaltu(drat1.aktiva || drat2.aktiva);
         };
 
         this.eniroj(rel1,rel2);
-        this.eliroj(eliro);
+        this.eliroj(eliro,eliro);
         this.aldonu(drat1,drat2);
     }
 }
 
 
-class NEKKrado extends Krado {
+class NEKPlato extends Plato {
     constructor(id) {
         super(id);
         this.nomo("NEK");
@@ -727,13 +737,13 @@ class NEKKrado extends Krado {
         };
 
         this.eniroj(rel1,rel2);
-        this.eliroj(eliro);
+        this.eliroj(eliro,eliro);
         this.aldonu(drat);
     };
 }
 
 
-class EKVKrado extends Krado {
+class EKVPlato extends Plato {
     constructor(id) {
         super(id);
         this.nomo("EKV");
@@ -767,12 +777,12 @@ class EKVKrado extends Krado {
         };
 
         this.eniroj(rel1,rel2);
-        this.eliroj(eliro);
+        this.eliroj(eliro,eliro);
         this.aldonu(drat1,drat2);
     }
 }
 
-class XAŬKrado extends Krado {
+class XAŬPlato extends Plato {
     constructor(id) {
         super(id);
         this.nomo("XAŬ");
@@ -806,13 +816,13 @@ class XAŬKrado extends Krado {
         };
 
         this.eniroj(rel1,rel2);
-        this.eliroj(eliro);
+        this.eliroj(eliro,eliro);
         this.aldonu(drat1,drat2);
     }
 }
 
 // duonadiciilo el KAJ kaj XAŬ
-class KAJXAŬKrado extends Krado {
+class KAJXAŬPlato extends Plato {
     constructor(id) {
         super(id);
         this.nomo("&/=1");
@@ -861,9 +871,9 @@ class KAJXAŬKrado extends Krado {
     }
 }
 
-class EnirKrado extends Krado {
+class EnirPlato extends Plato {
     constructor(id) {
-        super(id,"logikkrado eniroj",50,300);
+        super(id,"logikplato eniroj",50,300);
         this.kunigoj = [];
 
         const tx = Lk.e("text",{
@@ -953,9 +963,9 @@ class EnirKrado extends Krado {
     }
 }
 
-class ElirKrado extends Krado {
+class ElirPlato extends Plato {
     constructor(id) {
-        super(id,"logikkrado eliroj",50,300);
+        super(id,"logikplato eliroj",50,300);
         for (let i=5; i>=0; i--) {
             const drat = new LkPeco(false);
             const x = 10 + (i+1)%2*10
