@@ -27,6 +27,13 @@
     fill: none;
 }
 
+
+.logikplato text.for {
+    pointer-events: all;
+    cursor: pointer;
+    font-size: 4pt;
+}
+
 .logikplato line.maso {
     stroke: black;
     stroke-linecap: butt;

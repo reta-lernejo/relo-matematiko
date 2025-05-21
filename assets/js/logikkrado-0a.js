@@ -163,6 +163,7 @@ class LkPanelo extends LkSVG {
      * @param {*} i linio
      */
     metu(plato,j,i) {
+        plato.panelo = this;
         // KOREKTU: append nur se ne jam troviĝas        
         this.svg.append(plato.g);
         // ŝovu la platon al la ĝusta loko en SVG
@@ -210,29 +211,27 @@ class LkPanelo extends LkSVG {
 
         for (let _i = 0; _i<this.horz; _i++) {
             for (let _j = 0; _j<this.vert; _j++) {
-                if (this.metoj[_i][_j] == plato) {
+                if (this.metoj[_i][_j] && this.metoj[_i][_j][0] == plato) {
                     if (imin === undefined) imin = _i;
                     if (jmin === undefined) jmin = _j;
 
-                    if (_j == _jmin && _j>0) {
+                    if (_j == jmin && _j>0) {
                         // forigu kunigojn maldekstrajn en la linio _i
-                        if (_j>0) {
-                            const najbaro = this.metoj[_i][_j-1];
-                            if (najbaro) {
-                                const np = najbaro[0];
-                                const ni = najbaro[1];
-                                Plato.malligu(np,ni,plato,_i-imin);
-                            };
-                        }
+                        const najbaro = this.metoj[_i][_j-1];
+                        if (najbaro) {
+                            const np = najbaro[0];
+                            const ni = najbaro[1];
+                            Plato.malligu(np,ni,plato,_i-imin);
+                        };
                     }
 
                     // kaj dekstre
-                    if (_j == jmin+dj && _j<this.vert) {
+                    if (_j == jmin+dj-1 && _j<this.vert) {
                         const najbaro = this.metoj[_i][_j+dj];
                         if (najbaro) {
                             const np = najbaro[0];
                             const ni = najbaro[1];
-                            Plato.ligu(plato,_i-imin,np,ni);
+                            Plato.malligu(plato,_i-imin,np,ni);
                         }
                     }
         
@@ -244,7 +243,7 @@ class LkPanelo extends LkSVG {
             if (_i == imin+di-1) break;
         }
         // forigu la pecon el svg
-        this.svg.remove(plato);
+        plato.g.remove();
     }
 }
 
@@ -253,6 +252,7 @@ class Plato {
         this.id = id;
         this.en = [];
         this.el = [];
+        this.panelo = undefined;
 
         // SVG grupo-elemento, kiu entenas la grafikon de la ilo
         this.g = Lk.e("g",{
@@ -266,7 +266,21 @@ class Plato {
             width: w,
             rx: 5,
         });
-        this.g.append(r)
+
+        const x = Lk.e("text",{
+            class: "for",
+            x: w-9,
+            y: 9
+        },
+        "\u274c");
+        this.g.append(r,x);
+
+        x.addEventListener("click",() => {
+            const self = this;
+            if (this.panelo) {            
+                this.panelo.forigu(self);
+            }
+        });
     }
 
     formato() {
@@ -307,6 +321,22 @@ class Plato {
 
         // ĉu aktiva en momento de ligo?
         if (eliro.aktiva) eniro.ŝaltu(true);
+    }
+
+    /** malligas eliron de unu plato (plato) de eniro de apuda plato */
+    static malligu(plato_el,i_el,plato_en,i_en) {
+        // por kalkulado de aktiveco ni iras de eliroj (maldekstre) al eniroj (dekstren)
+        const eliro = plato_el.el[i_el];
+        const eniro = plato_en.en[i_en];
+
+
+        const i = eliro.ligoj.indexOf(eniro);
+        if (i > -1) { 
+            // malŝaltu eniron antaŭ malligo
+            if (eniro.aktiva) eniro.ŝaltu(false);
+
+            eliro.ligoj.splice(i, 1);
+        }
     }
 
     nomo(nom) {
