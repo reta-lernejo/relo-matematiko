@@ -201,12 +201,47 @@ class LkPanelo extends LkSVG {
         }
     }
 
-    forigu() {
-        for (let _i = i; _i<i+di; _i++) {
-            for (let _j = j; _j<j+dj; _j++) {
-                this.metoj[_i][_j] = plato;
+    forigu(plato) {
+        let imin, jmin;
+
+        const formato = plato.formato();
+        const dj = formato[0]/50; // larĝo
+        const di = formato[1]/50; // alto
+
+        for (let _i = 0; _i<this.horz; _i++) {
+            for (let _j = 0; _j<this.vert; _j++) {
+                if (this.metoj[_i][_j] == plato) {
+                    if (imin === undefined) imin = _i;
+                    if (jmin === undefined) jmin = _j;
+
+                    if (_j == _jmin && _j>0) {
+                        // forigu kunigojn maldekstrajn en la linio _i
+                        if (_j>0) {
+                            const najbaro = this.metoj[_i][_j-1];
+                            if (najbaro) {
+                                const np = najbaro[0];
+                                const ni = najbaro[1];
+                                Plato.malligu(np,ni,plato,_i-imin);
+                            };
+                        }
+                    }
+
+                    // kaj dekstre
+                    if (_j == jmin+dj && _j<this.vert) {
+                        const najbaro = this.metoj[_i][_j+dj];
+                        if (najbaro) {
+                            const np = najbaro[0];
+                            const ni = najbaro[1];
+                            Plato.ligu(plato,_i-imin,np,ni);
+                        }
+                    }
+        
+                    // transsaltu kolumnojn dekstre de la plato
+                    if (_j == jmin+dj-1) continue
+                }
             }
-            // forigu kunigojn en la linio _i
+
+            if (_i == imin+di-1) break;
         }
         // forigu la pecon el svg
         this.svg.remove(plato);
