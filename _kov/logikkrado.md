@@ -95,5 +95,4 @@ lanĉe(() => {
         <stop offset="95%" stop-color="red" />
       </radialGradient>
     </defs>
-    <rect width="400" height="300" stroke="none" rx="5" fill="silver"/>
 </svg>

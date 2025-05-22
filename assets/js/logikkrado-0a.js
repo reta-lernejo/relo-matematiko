@@ -139,6 +139,16 @@ class LkSVG {
         })
     }
 
+    svg_koordinatoj(event) {
+        let pt = this.svg.createSVGPoint();
+        pt.x = event.clientX;
+        pt.y = event.clientY;
+        let CTM = this.svg.getScreenCTM();
+        let inverseCTM = CTM.inverse();
+        let svgPoint = pt.matrixTransform(inverseCTM);
+        return svgPoint;
+    }    
+
 }
 
 /**
@@ -150,8 +160,30 @@ class LkPanelo extends LkSVG {
         super(svg);
         // ni uzas aranĝon de kampoj kun grandeco 50x50
         const vb = svg.getAttribute("viewBox").split(" ");
-        this.vert = Math.ceil((vb[2]-vb[0])/50);
-        this.horz = Math.ceil((vb[3]-vb[1])/50);
+
+        const r = Lk.e("rect", {
+            class: "panelo",
+            width: vb[2],
+            height: vb[3],
+            rx: 5
+        });
+        this.svg.append(r);
+
+        r.addEventListener("click",(event) => {
+            // se iu plato estas martkita, metu ĝin en la montritan lokon
+            // const markita = this.markita_plato()
+            // if (markita) {
+            const pt = this.svg_koordinatoj(event);
+            const v = Math.floor(pt.x/50);
+            const h = Math.floor(pt.y/50);
+            console.log("v"+v+" h"+h);
+            // this.forigu(markita)
+            // this.metu(markita,v,h)
+            //}
+        })
+
+        this.vert = Math.ceil(vb[2]/50); //-vb[0])/50);
+        this.horz = Math.ceil(vb[3]/50); //-vb[1])/50);
         // preparu aranĝon horz (horizontaloj) x vert (vertikaloj/kolumnoj);
         this.metoj = Array.from({ length: this.horz }, () => Array(this.vert).fill(undefined));
     }
@@ -271,6 +303,9 @@ class LkPanelo extends LkSVG {
                             Plato.malligu(plato,_i-imin,np,ni);
                         }
                     }
+
+                    // liberu la kampon en la panelo
+                    this.metoj[_i][_j] = undefined;
         
                     // transsaltu kolumnojn dekstre de la plato
                     if (_j == jmin+dj-1) continue
@@ -347,6 +382,7 @@ class Plato {
         this.en = [];
         this.el = [];
         this.panelo = undefined;
+        //this.markita = false;
 
         // SVG grupo-elemento, kiu entenas la grafikon de la ilo
         this.g = Lk.e("g",{
@@ -368,6 +404,11 @@ class Plato {
         },
         "\u274c");
         this.g.append(r,x);
+
+        r.addEventListener("click",() => {
+            //this.markita = !this.markita;
+            r.classList.toggle("markita")
+        })
 
         x.addEventListener("click",() => {
             const self = this;

@@ -1,3 +1,10 @@
+rect.panelo {
+    stroke: none;
+    fill: silver;
+    pointer-events: all;
+    cursor: pointer;
+}
+
 .menuo rect {
     fill: rgb(101, 186, 197);
     stroke-width: 0.5;
@@ -23,12 +30,19 @@
     fill: rgb(181, 232, 255);
     stroke-width: 0.5;
     stroke: gray;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.logikplato .plato.markita {
+    stroke-width: 1.5;
+    stroke: darkred;
+    stroke-dasharray: 5,2;
 }
 
 .logikplato rect {
     stroke: black;
     fill: none;
-    pointer-events: all;
 }
 
 .logikplato path {
@@ -61,12 +75,15 @@
     stroke-width: 2;
 }
 
-.eniroj circle, .eniroj text {
+.eniroj circle {
     pointer-events: all;
+    cursor: pointer;    
 }
 
 .eniroj text {
     font-size: 10pt;
+    pointer-events: none;
+    cursor: pointer;    
 }
 
 .relajso .kerno {
