@@ -4,7 +4,7 @@
     stroke: gray;
 }
 
-.menuo .butono {
+.menuo rect.butono {
     fill: rgb(255, 222, 160);
     pointer-events: all;
     cursor: pointer;
@@ -14,6 +14,9 @@
     font-size: 8pt;
     text-anchor: middle;
     dominant-baseline: middle;
+    /* plusendu klakojn al la rektangulo de la butono */
+    pointer-events: none;
+    cursor: pointer;
 }
 
 .logikplato .plato {

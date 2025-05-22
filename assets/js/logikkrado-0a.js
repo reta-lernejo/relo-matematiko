@@ -156,6 +156,43 @@ class LkPanelo extends LkSVG {
         this.metoj = Array.from({ length: this.horz }, () => Array(this.vert).fill(undefined));
     }
 
+    trovu_lokon(plato) {
+        const formato = plato.formato();
+        const dj = formato[0]/50; // larĝo
+        const di = formato[1]/50; // alto
+
+        for (let i = 0; i<this.horz; i++) {
+            for (let j = 0; j<this.vert; j++) {
+                if (!this.metoj[i][j] && i+di<this.horz && j+dj<this.vert) {
+                    let spaco = true;
+                    // ĉu tie estas dkestre kaj malsupre spaco por la cetero de la plato?
+                    for (let _i=i; _i < i+di; _i++) {
+                        for (let _j=j; _j<j+dj; _j++) {
+                            // se okupita eliru
+                            if (this.metoj[_i][_j]) {
+                                spaco = false;
+                                break;
+                            }
+                            if (!spaco) break;
+                        }
+                    }
+                    // se spaco sufiĉas ni trovis taŭgan lokon
+                    if (spaco) 
+                        return [j,i];
+                }
+            }
+        }
+    }
+
+    metu_ien(plato) {
+        const loko = this.trovu_lokon(plato);
+        if (loko) {
+            this.metu(plato,...loko);
+        } else {
+            throw("Ne troviĝas konvena loko sur la panelo por "+plato.id);
+        }
+    }
+
     /**
      * 
      * @param {*} plato 
@@ -273,6 +310,7 @@ class LkMenuo {
         const w = 32
         eroj.forEach((ero,n) => {
             const btn = Lk.e("rect",{
+                id: ero,
                 class: "butono",
                 x: x0 + n*(w+2),
                 y: y0,
@@ -281,11 +319,25 @@ class LkMenuo {
                 height: h
             });
             const t = Lk.e("text",{
+                class: "butono",
                 x: x0-1 + w/2 + n*(w+2), 
                 y: y0+1.5 + h/2 // 1.5: iom pli sube pro supersignoj
             },ero);
             this.g.append(btn,t);
         })
+    }
+
+    reago(rg) {
+        this.g.querySelectorAll(".butono").forEach((btn) => {
+            btn.addEventListener("click",() => {
+                const ero = btn.closest("rect.butono");
+                if (ero)
+                    {
+                        const id = ero.getAttribute("id");
+                        rg(id)
+                    }
+            });
+        });
     }
 }
 
