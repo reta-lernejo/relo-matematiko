@@ -1,3 +1,21 @@
+.menuo rect {
+    fill: rgb(101, 186, 197);
+    stroke-width: 0.5;
+    stroke: gray;
+}
+
+.menuo .butono {
+    fill: rgb(255, 222, 160);
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.menuo text {
+    font-size: 8pt;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}
+
 .logikplato .plato {
     fill: rgb(181, 232, 255);
     stroke-width: 0.5;

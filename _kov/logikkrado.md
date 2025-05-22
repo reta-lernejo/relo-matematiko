@@ -17,6 +17,10 @@ https://de.wikipedia.org/wiki/Logikgatter
 
 lanĉe(() => {
     panelo = new LkPanelo(ĝi("#plato"));
+    menuo = new LkMenuo("MENU");
+    menuo.menueroj("ID","NE","KAJ","NKAJ","AŬ","XAŬ","NEK","EKV");
+    panelo.ŝovu(menuo.g,0,-20);
+    panelo.svg.append(menuo.g);
 
     EN = new EnirPlato("EN");
     EN.kunigu(0);
@@ -93,25 +97,12 @@ lanĉe(() => {
 <svg id="plato"
     version="1.1" 
     xmlns="http://www.w3.org/2000/svg" 
-    xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="600" viewBox="0 0 400 300">
+    xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="640" viewBox="0 -10 400 300">
     <defs>
-    <!--
-      <linearGradient id="helrugho" x1="0%" y1="0%" x2="0%" y2="100%">
-        <stop offset="0%" style="stop-color:#DD0000;stop-opacity:1" />
-        <stop offset="20%" style="stop-color:#FF4511;stop-opacity:1" />
-        <stop offset="55%" style="stop-color:#FFBBDD;stop-opacity:1" />
-        <stop offset="80%" style="stop-color:#FF4511;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#DD0000;stop-opacity:1" />
-      </linearGradient> 
       <radialGradient id="helrugho">
-        <stop offset="0%" style="stop-color:#FFFACD;stop-opacity:1" />
-        <stop offset="50%" style="stop-color:#FF4500;stop-opacity:1" />
-        <stop offset="100%" style="stop-color:#FF2222;stop-opacity:1" />
-      </radialGradient>      -->
-    <radialGradient id="helrugho">
-      <stop offset="10%" stop-color="gold" />
-      <stop offset="95%" stop-color="red" />
-    </radialGradient>      
+        <stop offset="10%" stop-color="gold" />
+        <stop offset="95%" stop-color="red" />
+      </radialGradient>
     </defs>
     <rect width="400" height="300" stroke="none" rx="5" fill="silver"/>
 </svg>

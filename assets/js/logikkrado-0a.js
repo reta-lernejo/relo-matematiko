@@ -247,6 +247,48 @@ class LkPanelo extends LkSVG {
     }
 }
 
+class LkMenuo {
+    constructor(id, klaso="menuo", w=400, h=20) {
+        this.id = id;
+
+        // SVG grupo-elemento, kiu entenas la grafikon de la ilo
+        this.g = Lk.e("g",{
+            id: id,
+            class: klaso
+        });    
+
+        const r = Lk.e("rect",{
+            width: w,
+            height: h,
+            rx: 5
+        });
+
+        this.g.append(r);
+    }
+
+    menueroj(...eroj) {
+        const y0 = 2;
+        const x0 = 5;
+        const h = 16;
+        const w = 32
+        eroj.forEach((ero,n) => {
+            const btn = Lk.e("rect",{
+                class: "butono",
+                x: x0 + n*(w+2),
+                y: y0,
+                rx: 3,
+                width: w,
+                height: h
+            });
+            const t = Lk.e("text",{
+                x: x0-1 + w/2 + n*(w+2), 
+                y: y0+1.5 + h/2 // 1.5: iom pli sube pro supersignoj
+            },ero);
+            this.g.append(btn,t);
+        })
+    }
+}
+
 class Plato {
     constructor(id, klaso="logikplato", w=100, h=100) {
         this.id = id;
