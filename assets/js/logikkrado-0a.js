@@ -461,11 +461,12 @@ class LkMenuo {
 }
 
 class Plato {
-    constructor(id, klaso="logikplato", w=100, h=100) {
+    constructor(id, forigebla=true, klaso="logikplato", w=100, h=100) {
         this.id = id || Lk.uuid();
         this.en = [];
         this.el = [];
         this.panelo = undefined;
+        this.forigebla = forigebla;
         this.markebla = true;
 
         // SVG grupo-elemento, kiu entenas la grafikon de la ilo
@@ -480,26 +481,29 @@ class Plato {
             width: w,
             rx: 5,
         });
+        this.g.append(r);    
 
-        const x = Lk.e("text",{
-            class: "for",
-            x: w-9,
-            y: 9
-        },
-        "\u274c");
-        this.g.append(r,x);
+        if (forigebla) {
+            const x = Lk.e("text",{
+                class: "for",
+                x: w-9,
+                y: 9
+            },
+            "\u274c");
+            this.g.append(x);    
+
+            x.addEventListener("click",() => {
+                const self = this;
+                if (this.panelo) {            
+                    this.panelo.forigu(self);
+                }
+            });
+        }
 
         r.addEventListener("click",() => {
             if (this.markebla)
                 this.panelo.marku(this);            
         })
-
-        x.addEventListener("click",() => {
-            const self = this;
-            if (this.panelo) {            
-                this.panelo.forigu(self);
-            }
-        });
     }
 
     formato() {
@@ -849,8 +853,8 @@ class LkRelajs extends LkPeco {
 
 
 class IDPlato extends Plato {
-    constructor(id) {
-        super(id,undefined,100,50);
+    constructor(id,forigebla=true) {
+        super(id,forigebla,undefined,100,50);
         this.nomo("ID");
 
         // relajso - ni uzas relajson por ke
@@ -876,8 +880,8 @@ class IDPlato extends Plato {
 }
 
 class NEPlato extends Plato {
-    constructor(id) {
-        super(id,undefined,100,50);
+    constructor(id,forigebla=true) {
+        super(id,forigebla,undefined,100,50);
         this.nomo("NE");
 
         // relajso
@@ -1167,8 +1171,8 @@ class KAJXAŬPlato extends Plato {
 }
 
 class EnirPlato extends Plato {
-    constructor(id) {
-        super(id,"logikplato eniroj",50,300);
+    constructor(id,forigebla=false) {
+        super(id,forigebla,"logikplato eniroj",50,300);
         this.kunigoj = [];
 
         const tx = Lk.e("text",{
@@ -1259,8 +1263,8 @@ class EnirPlato extends Plato {
 }
 
 class ElirPlato extends Plato {
-    constructor(id) {
-        super(id,"logikplato eliroj",50,300);
+    constructor(id,forigebla=false) {
+        super(id,forigebla,"logikplato eliroj",50,300);
         for (let i=5; i>=0; i--) {
             const drat = new LkPeco(false);
             const x = 10 + (i+1)%2*10
