@@ -68,9 +68,9 @@ class Lk {
  * Klaso kiu tenas la elementon <svg> de vektordesegnaĵo kaj ofertas kelkajn aldonajn utilfunkciojn.
  */
 class LkSVG {
-    
+
     constructor(svg) {
-        this.svg = svg;
+        this.svg = svg;        
     }
 
     /**
@@ -168,11 +168,21 @@ class LkSVG {
  * Ĝi ankaŭ zorgas pri metado, forigo kaj kunligo de apudaj kontaktoj
  */
 class LkPanelo extends LkSVG {
-    constructor(svg) {
+
+
+    /* ekz-e:
+    aranĝo = {
+        menuo: ["ID","NE","KAJ","NKAJ","AŬ","XAŬ","NEK","EKV"],
+        EN: [0,0],
+        EL: [7,0],
+        KAJ: [1,0]
+    }
+    */
+
+    constructor(svg, aranĝo) {
         super(svg);
         // ni uzas aranĝon de kampoj kun grandeco 50x50
         const vb = svg.getAttribute("viewBox").split(" ");
-
 
         const r = Lk.e("rect", {
             class: "panelo",
@@ -229,7 +239,67 @@ class LkPanelo extends LkSVG {
         // preparu aranĝon horz (horizontaloj) x vert (vertikaloj/kolumnoj);
         this.platoj = {};
         this.metoj = Array.from({ length: this.horz }, () => Array(this.vert).fill(undefined));
+
+        if (aranĝo) {
+            this.kreu(aranĝo)
+        }
     }
+
+    kreu(aranĝo) {
+
+        const platspecoj = {
+            "ID":  IDPlato,
+            "NE":  NEPlato,
+            "KAJ":  KAJPlato,
+            "NKAJ":  NKAJPlato,
+            "AŬ":  AŬPlato,
+            "XAŬ":  XAŬPlato,
+            "NEK":  NEKPlato,
+            "EKV": EKVPlato
+        }
+
+
+        // kreu menuon por la diversaj logikplatoj
+        if (aranĝo.menuo) {
+            const menuo = new LkMenuo("MENU");
+            menuo.menueroj(...aranĝo.menuo);
+            menuo.reago((ero) => {
+                const PS = platspecoj[ero];
+                const plato = new PS();
+                this.metu_ien(plato);
+            });
+        
+            this.ŝovu(menuo.g,0,-20);
+            this.svg.append(menuo.g);
+        }
+    
+        // kreu eniron
+        if (aranĝo.EN) {
+            const EN = new EnirPlato("EN");
+            EN.markebla = false;
+            // PLIBONIGU:
+            // kiel agordi tion per la aranĝo?
+            EN.kunigu(0);
+            EN.kunigu(1);
+            EN.kunigu(2);
+            EN.kunigu(3);
+            this.metu(EN,0,0);    
+        }
+
+        if (aranĝo.EL) {
+            const EL = new ElirPlato("EL");
+            this.metu(EL,this.vert-1,0);    
+        }
+    
+        for (const ps of Object.keys(platspecoj)) {
+            if (aranĝo[ps]) {
+                const PS = platspecoj[ps];
+                const plato = new PS(ps);
+                this.metu(plato,...aranĝo[ps]);
+            }
+        }      
+    }
+
 
     trovu_lokon(plato) {
 

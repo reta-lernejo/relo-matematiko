@@ -15,72 +15,16 @@ https://de.wikipedia.org/wiki/Logikgatter
 
 <script>
 
+
 lanĉe(() => {
-    panelo = new LkPanelo(ĝi("#plato"));
-
-    // kreu menuon por la diversaj logikplatoj
-    menuo = new LkMenuo("MENU");
-    menuo.menueroj("ID","NE","KAJ","NKAJ","AŬ","XAŬ","NEK","EKV");
-    const platspecoj = {
-      "ID":  IDPlato,
-      "NE":  NEPlato,
-      "KAJ":  KAJPlato,
-      "NKAJ":  NKAJPlato,
-      "AŬ":  AŬPlato,
-      "XAŬ":  XAŬPlato,
-      "NEK":  NEKPlato,
-      "EKV": EKVPlato
+    const aranĝo = {
+      menuo: ["ID","NE","KAJ","NKAJ","AŬ","XAŬ","NEK","EKV"],
+      EN: [0,0],
+      EL: [7,0],
+      KAJ: [1,0]
     }
-    menuo.reago((ero) => {
-      const PS = platspecoj[ero];
-      const plato = new PS();
-      panelo.metu_ien(plato);
-    });
 
-    panelo.ŝovu(menuo.g,0,-20);
-    panelo.svg.append(menuo.g);
-
-    EN = new EnirPlato("EN");
-    EN.markebla = false;
-    EN.kunigu(0);
-    EN.kunigu(1);
-    EN.kunigu(2);
-    EN.kunigu(3);
-    panelo.metu(EN,0,0);
-
-/*
-    NE = new NEPlato("NE");
-    panelo.metu(NE,1,1);
-
-    AŬ = new AŬPlato("AŬ");
-    panelo.metu(AŬ,1,2);
-
-    ID = new IDPlato("ID");
-    panelo.metu(ID,1,4);
-
-    KAJ = new KAJPlato("KAJ");
-    panelo.metu(KAJ,3,1);
-
-    NEK = new NEKPlato("NEK");
-    panelo.metu(NEK,3,3);
-
-    NKAJ = new NKAJPlato("NKAJ");
-    panelo.metu(NKAJ,5,0);
-
-    XAŬ = new XAŬPlato("XAŬ");
-    panelo.metu(XAŬ,5,2);
-
-    EKV = new EKVPlato("EKV");
-    panelo.metu(EKV,5,4);
-*/
-
-/*
-    KXA = new KAJXAŬPlato("&/=1");
-    SVG.ŝovu(KXA.g,350,50);
-*/
-
-    EL = new ElirPlato("EL");
-    panelo.metu(EL,7,0);
+    panelo = new LkPanelo(ĝi("#plato"), aranĝo);
 });
 
 </script>
