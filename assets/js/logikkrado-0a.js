@@ -173,6 +173,7 @@ class LkPanelo extends LkSVG {
         // ni uzas aranĝon de kampoj kun grandeco 50x50
         const vb = svg.getAttribute("viewBox").split(" ");
 
+
         const r = Lk.e("rect", {
             class: "panelo",
             width: vb[2],
@@ -181,21 +182,42 @@ class LkPanelo extends LkSVG {
         });
         this.svg.append(r);
 
-        r.addEventListener("click",(event) => {
-            // se iu plato estas martkita, metu ĝin en la montritan lokon
-            // const markita = this.markita_plato()
-            // if (markita) {
-            const pt = this.svg_koordinatoj(event);
-            const v = Math.floor(pt.x/50);
-            const h = Math.floor(pt.y/50);
-            console.log("v"+v+" h"+h);
-            // this.forigu(markita)
-            // this.metu(markita,v,h)
-            //}
-        })
-
         this.vert = Math.ceil(vb[2]/50); //-vb[0])/50);
         this.horz = Math.ceil(vb[3]/50); //-vb[1])/50);
+
+        // montru kradon 50x50
+        const g = Lk.e("g", {
+            class: "krado"
+        });
+        for (let i = 0; i<this.horz; i++) {
+            for (let j = 0; j<this.vert; j++) {
+                const r1 = Lk.e("rect",{
+                    x: 50*j,
+                    y: 50*i,
+                    width: 50,
+                    height: 50,
+                    rx: 5
+                });
+                g.append(r1);
+            }
+        }
+            
+        r.addEventListener("click",(event) => {
+            // se iu plato estas martkita, metu ĝin en la montritan lokon
+            const markita = this.markita();
+            if (markita) {
+                const pt = this.svg_koordinatoj(event);
+                const v = Math.floor(pt.x/50);
+                const h = Math.floor(pt.y/50);
+                console.log("v"+v+" h"+h);
+                
+                this.forigu(markita);
+                this.metu(markita,v,h);
+            }
+        });
+
+        this.svg.append(g);
+
         // preparu aranĝon horz (horizontaloj) x vert (vertikaloj/kolumnoj);
         this.platoj = {};
         this.metoj = Array.from({ length: this.horz }, () => Array(this.vert).fill(undefined));
@@ -257,30 +279,33 @@ class LkPanelo extends LkSVG {
         const dj = formato[0]/50; // larĝo
         const di = formato[1]/50; // alto
 
-        for (let _i = i; _i<i+di; _i++) {
-            for (let _j = j; _j<j+dj; _j++) {
-                // ni memoras sur kiu kampo [_i,_j] de la panelo
-                // estas kiu kampo [_i-i,_j-j] de la plato
-                // aparte la i-koordinaton ni bezonas por identigi apudajn
-                // enirojn/eliroj por kunigo
-                this.metoj[_i][_j] = [plato,_i-i,_j-j];
-            }
-            // kunigu kun apudaj platoj maldekstre 
-            if (j>0) {
-                const najbaro = this.metoj[_i][j-1];
-                if (najbaro) {
-                    const np = najbaro[0];
-                    const ni = najbaro[1];
-                    Plato.ligu(np,ni,plato,_i-i);
-                };
-            }
-            // kaj dekstre
-            if (j+dj<this.vert) {
-                const najbaro = this.metoj[_i][j+dj];
-                if (najbaro) {
-                    const np = najbaro[0];
-                    const ni = najbaro[1];
-                    Plato.ligu(plato,_i-i,np,ni);
+        if (i+di<=this.horz && j+dj<=this.vert) {
+
+            for (let _i = i; _i<i+di; _i++) {
+                for (let _j = j; _j<j+dj; _j++) {
+                    // ni memoras sur kiu kampo [_i,_j] de la panelo
+                    // estas kiu kampo [_i-i,_j-j] de la plato
+                    // aparte la i-koordinaton ni bezonas por identigi apudajn
+                    // enirojn/eliroj por kunigo
+                    this.metoj[_i][_j] = [plato,_i-i,_j-j];
+                }
+                // kunigu kun apudaj platoj maldekstre 
+                if (j>0) {
+                    const najbaro = this.metoj[_i][j-1];
+                    if (najbaro) {
+                        const np = najbaro[0];
+                        const ni = najbaro[1];
+                        Plato.ligu(np,ni,plato,_i-i);
+                    };
+                }
+                // kaj dekstre
+                if (j+dj<this.vert) {
+                    const najbaro = this.metoj[_i][j+dj];
+                    if (najbaro) {
+                        const np = najbaro[0];
+                        const ni = najbaro[1];
+                        Plato.ligu(plato,_i-i,np,ni);
+                    }
                 }
             }
         }
@@ -326,6 +351,15 @@ class LkPanelo extends LkSVG {
         plato.g.remove();
         delete this.platoj[plato.id];
     }
+
+    markita() {
+        for (const p of Object.values(this.platoj)) {
+            if (p[0].markita()) {
+                console.log("markita: "+p[0].id);
+                return(p[0]);
+            };
+        };
+    }    
 
     marku(plato) {
         Object.values(this.platoj).forEach((p) => {
@@ -398,11 +432,11 @@ class Plato {
         this.en = [];
         this.el = [];
         this.panelo = undefined;
-        //this.markita = false;
+        this.markebla = true;
 
         // SVG grupo-elemento, kiu entenas la grafikon de la ilo
         this.g = Lk.e("g",{
-            id: id,
+            id: this.id,
             class: klaso
         });    
         
@@ -422,7 +456,8 @@ class Plato {
         this.g.append(r,x);
 
         r.addEventListener("click",() => {
-            this.panelo.marku(this);            
+            if (this.markebla)
+                this.panelo.marku(this);            
         })
 
         x.addEventListener("click",() => {
@@ -446,7 +481,7 @@ class Plato {
     }
 
     markita() {
-        thius.g.querySelector(".marktita");
+        return this.g.querySelector(".markita");
     }
 
     /** aldonas pecojn al la plato */

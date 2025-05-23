@@ -41,6 +41,7 @@ lanĉe(() => {
     panelo.svg.append(menuo.g);
 
     EN = new EnirPlato("EN");
+    EN.markebla = false;
     EN.kunigu(0);
     EN.kunigu(1);
     EN.kunigu(2);

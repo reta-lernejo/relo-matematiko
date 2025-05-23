@@ -5,6 +5,13 @@ rect.panelo {
     cursor: pointer;
 }
 
+.krado rect {
+    stroke-width: 0.5;
+    stroke: gray;
+    fill: none;
+    stroke-dasharray: 3,3;
+}
+
 .menuo rect {
     fill: rgb(101, 186, 197);
     stroke-width: 0.5;
