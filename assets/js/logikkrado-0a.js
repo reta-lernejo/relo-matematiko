@@ -50,6 +50,18 @@ class Lk {
         id.setAttribute("id",nom);
         elm.append(id);
     }
+
+    static uuid() {
+        if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+            return crypto.randomUUID();
+        } else {
+            // randomUUID ne estas ĉiam uzebla, aparte ne se ni testas loke per HTTP
+            const timestamp = new Date().getTime(); // Get current timestamp
+            const randomPart = Math.random().toString(36).substring(2, 15); 
+            const anotherRandomPart = Math.random().toString(36).substring(2, 15); 
+            return `id-${timestamp}-${randomPart}-${anotherRandomPart}`;
+        }
+    }
 }
 
 /**
@@ -185,6 +197,7 @@ class LkPanelo extends LkSVG {
         this.vert = Math.ceil(vb[2]/50); //-vb[0])/50);
         this.horz = Math.ceil(vb[3]/50); //-vb[1])/50);
         // preparu aranĝon horz (horizontaloj) x vert (vertikaloj/kolumnoj);
+        this.platoj = {};
         this.metoj = Array.from({ length: this.horz }, () => Array(this.vert).fill(undefined));
     }
 
@@ -195,7 +208,7 @@ class LkPanelo extends LkSVG {
 
         for (let i = 0; i<this.horz; i++) {
             for (let j = 0; j<this.vert; j++) {
-                if (!this.metoj[i][j] && i+di<this.horz && j+dj<this.vert) {
+                if (!this.metoj[i][j] && i+di<=this.horz && j+dj<=this.vert) {
                     let spaco = true;
                     // ĉu tie estas dkestre kaj malsupre spaco por la cetero de la plato?
                     for (let _i=i; _i < i+di; _i++) {
@@ -233,6 +246,8 @@ class LkPanelo extends LkSVG {
      */
     metu(plato,j,i) {
         plato.panelo = this;
+        this.platoj[plato.id] = [plato,j,i];
+
         // KOREKTU: append nur se ne jam troviĝas        
         this.svg.append(plato.g);
         // ŝovu la platon al la ĝusta loko en SVG
@@ -272,50 +287,51 @@ class LkPanelo extends LkSVG {
     }
 
     forigu(plato) {
-        let imin, jmin;
+        //let imin, jmin;
+        const pi = this.platoj[plato.id];
+        const j = pi[1];
+        const i = pi[2];
 
         const formato = plato.formato();
         const dj = formato[0]/50; // larĝo
         const di = formato[1]/50; // alto
 
-        for (let _i = 0; _i<this.horz; _i++) {
-            for (let _j = 0; _j<this.vert; _j++) {
-                if (this.metoj[_i][_j] && this.metoj[_i][_j][0] == plato) {
-                    if (imin === undefined) imin = _i;
-                    if (jmin === undefined) jmin = _j;
-
-                    if (_j == jmin && _j>0) {
-                        // forigu kunigojn maldekstrajn en la linio _i
-                        const najbaro = this.metoj[_i][_j-1];
-                        if (najbaro) {
-                            const np = najbaro[0];
-                            const ni = najbaro[1];
-                            Plato.malligu(np,ni,plato,_i-imin);
-                        };
-                    }
-
-                    // kaj dekstre
-                    if (_j == jmin+dj-1 && _j<this.vert) {
-                        const najbaro = this.metoj[_i][_j+dj];
-                        if (najbaro) {
-                            const np = najbaro[0];
-                            const ni = najbaro[1];
-                            Plato.malligu(plato,_i-imin,np,ni);
-                        }
-                    }
-
-                    // liberu la kampon en la panelo
-                    this.metoj[_i][_j] = undefined;
-        
-                    // transsaltu kolumnojn dekstre de la plato
-                    if (_j == jmin+dj-1) continue
+        for (let _i = i; _i<i+di; _i++) {
+            // forigu kunigojn maldekstrajn en la linio _i
+            if (j>0) {
+                const najbaro = this.metoj[_i][j-1];
+                if (najbaro) {
+                    const np = najbaro[0];
+                    const ni = najbaro[1];
+                    Plato.malligu(np,ni,plato,_i-i);
+                };
+            }
+            // kaj dekstre
+            if (j+dj<this.vert) {
+                const najbaro = this.metoj[_i][j+dj];
+                if (najbaro) {
+                    const np = najbaro[0];
+                    const ni = najbaro[1];
+                    Plato.malligu(plato,_i-i,np,ni);
                 }
             }
 
-            if (_i == imin+di-1) break;
+            // liberu la kampon en la panelo
+            for (let _j = j; _j<j+dj; _j++) {
+                this.metoj[_i][_j] = undefined;
+            }
         }
+
         // forigu la pecon el svg
         plato.g.remove();
+        delete this.platoj[plato.id];
+    }
+
+    marku(plato) {
+        Object.values(this.platoj).forEach((p) => {
+            if (p[0] === plato) p[0].marku(true);
+            else p[0].marku(false);
+        })
     }
 }
 
@@ -378,7 +394,7 @@ class LkMenuo {
 
 class Plato {
     constructor(id, klaso="logikplato", w=100, h=100) {
-        this.id = id;
+        this.id = id || Lk.uuid();
         this.en = [];
         this.el = [];
         this.panelo = undefined;
@@ -406,8 +422,7 @@ class Plato {
         this.g.append(r,x);
 
         r.addEventListener("click",() => {
-            //this.markita = !this.markita;
-            r.classList.toggle("markita")
+            this.panelo.marku(this);            
         })
 
         x.addEventListener("click",() => {
@@ -421,6 +436,17 @@ class Plato {
     formato() {
         const plato = this.g.querySelector(".plato");
         return([plato.getAttribute("width"),plato.getAttribute("height")]);
+    }
+
+    marku(mark) {
+        const r = this.g.querySelector("rect.plato");
+        if (r) {
+            r.classList.toggle("markita",mark);
+        }
+    }
+
+    markita() {
+        thius.g.querySelector(".marktita");
     }
 
     /** aldonas pecojn al la plato */
