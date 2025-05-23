@@ -1,8 +1,11 @@
 ---
 layout: laborfolio
 title: 1 - Logikaj funkcioj
+css:
+  - logikkrado-0a
 js:
   - folio-0c
+  - logikkrado-0a
 js-ext: mathjax3
 ---
 
@@ -231,6 +234,44 @@ Oni per supermetado de logikaj funkcioj povas ricevi novajn. Ekzemple oni povas 
 
 <!-- klarigu skribmanierojn \land - similas majusklan A, \lor similas la "u" resp. la hoketon super "ŭ",
 oni povas forlasi \land kaj skribi "ab"; \overline oni povas ankaŭ skribi \lnot, sed tio estas malpli konciza -->
+
+<script>
+
+
+lanĉe(() => {
+    const aranĝo = {
+      menuo: ["ID","NE","KAJ","AŬ"],
+      platoj: [
+        ["EN",  0,0],
+        ["EL",  7,0],
+        ["KAJ", 1,0],
+        ["ID",  3,0],
+        ["ID",  5,0],
+        ["NE",  1,2],
+        ["NE",  1,3],
+        ["AŬ",  3,2],
+        ["NE",  5,2]
+      ]
+    }
+
+    panelo = new LkPanelo(ĝi("#plato"), aranĝo);
+});
+
+</script>
+
+
+<svg id="plato"
+    version="1.1" 
+    xmlns="http://www.w3.org/2000/svg" 
+    xmlns:xlink="http://www.w3.org/1999/xlink" width="800" height="640" viewBox="0 -10 400 300">
+    <defs>
+      <radialGradient id="helrugho">
+        <stop offset="10%" stop-color="gold" />
+        <stop offset="95%" stop-color="red" />
+      </radialGradient>
+    </defs>
+</svg>
+
 
 ## Bulea Algebro
 

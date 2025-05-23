@@ -272,32 +272,36 @@ class LkPanelo extends LkSVG {
             this.ŝovu(menuo.g,0,-20);
             this.svg.append(menuo.g);
         }
-    
-        // kreu eniron
-        if (aranĝo.EN) {
-            const EN = new EnirPlato("EN");
-            EN.markebla = false;
-            // PLIBONIGU:
-            // kiel agordi tion per la aranĝo?
-            EN.kunigu(0);
-            EN.kunigu(1);
-            EN.kunigu(2);
-            EN.kunigu(3);
-            this.metu(EN,0,0);    
-        }
 
-        if (aranĝo.EL) {
-            const EL = new ElirPlato("EL");
-            this.metu(EL,this.vert-1,0);    
-        }
-    
-        for (const ps of Object.keys(platspecoj)) {
-            if (aranĝo[ps]) {
-                const PS = platspecoj[ps];
-                const plato = new PS(ps);
-                this.metu(plato,...aranĝo[ps]);
-            }
-        }      
+        if (aranĝo.platoj) {
+            for (const p of aranĝo.platoj) {
+
+                switch (p[0]) {
+                case "EN":
+                    // kreu eniron
+                    const EN = new EnirPlato("EN");
+                    EN.markebla = false;
+                    // PLIBONIGU:
+                    // kiel agordi tion per la aranĝo?
+                    EN.kunigu(0);
+                    EN.kunigu(1);
+                    EN.kunigu(2);
+                    EN.kunigu(3);
+                    this.metu(EN,p[1],p[2]);    
+                    break;
+                
+                case "EL":
+                    const EL = new ElirPlato("EL");
+                    this.metu(EL,p[1],p[2]);    
+                    break;
+            
+                default:
+                    const PS = platspecoj[p[0]];
+                    const plato = new PS();
+                    this.metu(plato,p[1],p[2]);                       
+                } // switch
+            } // for
+        } // if
     }
 
 
