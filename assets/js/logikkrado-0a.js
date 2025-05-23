@@ -210,9 +210,17 @@ class LkPanelo extends LkSVG {
                 const v = Math.floor(pt.x/50);
                 const h = Math.floor(pt.y/50);
                 console.log("v"+v+" h"+h);
-                
-                this.forigu(markita);
-                this.metu(markita,v,h);
+
+                const formato = markita.formato();
+                const dj = formato[0]/50; // larĝo
+                const di = formato[1]/50; // alto
+                   
+                // se la loko estas libera ni povas movi la markitan 
+                // platon tien
+                if (this.libera_loko(markita,v,h)) {
+                    this.forigu(markita);
+                    this.metu(markita,v,h);
+                }
             }
         });
 
@@ -224,12 +232,12 @@ class LkPanelo extends LkSVG {
     }
 
     trovu_lokon(plato) {
-        const formato = plato.formato();
-        const dj = formato[0]/50; // larĝo
-        const di = formato[1]/50; // alto
 
         for (let i = 0; i<this.horz; i++) {
             for (let j = 0; j<this.vert; j++) {
+                if (this.libera_loko(plato,j,i))
+                    return [j,i];
+/*                    
                 if (!this.metoj[i][j] && i+di<=this.horz && j+dj<=this.vert) {
                     let spaco = true;
                     // ĉu tie estas dkestre kaj malsupre spaco por la cetero de la plato?
@@ -246,9 +254,35 @@ class LkPanelo extends LkSVG {
                     // se spaco sufiĉas ni trovis taŭgan lokon
                     if (spaco) 
                         return [j,i];
-                }
+                }*/
             }
         }
+    }
+
+    libera_loko(plato,j,i) {
+        const formato = plato.formato();
+        const dj = formato[0]/50; // larĝo
+        const di = formato[1]/50; // alto
+
+        if (i+di<=this.horz && j+dj<=this.vert &&
+            (!this.metoj[i][j] || this.metoj[i][j][0] === plato)) 
+        {
+            let spaco = true;
+            // ĉu tie estas dkestre kaj malsupre spaco por la cetero de la plato?
+            for (let _i=i; _i < i+di; _i++) {
+                for (let _j=j; _j<j+dj; _j++) {
+                    // se okupita eliru
+                    if (this.metoj[_i][_j] && this.metoj[_i][_j][0] !== plato) {
+                        spaco = false;
+                        break;
+                    }
+                    if (!spaco) break;
+                }
+            }
+            // se spaco sufiĉas ni trovis taŭgan lokon
+            return (spaco);
+        }
+        return false;
     }
 
     metu_ien(plato) {
