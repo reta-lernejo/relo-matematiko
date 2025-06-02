@@ -192,8 +192,8 @@ class LkPanelo extends LkSVG {
         });
         this.svg.append(r);
 
-        this.vert = Math.ceil(vb[2]/50); //-vb[0])/50);
-        this.horz = Math.ceil(vb[3]/50); //-vb[1])/50);
+        this.vert = Math.ceil(vb[2]/50);
+        this.horz = Math.ceil((vb[3]-20)/50); // -20 pro la supra menuo ni redukto la uzeblan altecon
 
         // montru kradon 50x50
         const g = Lk.e("g", {
