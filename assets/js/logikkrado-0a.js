@@ -255,7 +255,8 @@ class LkPanelo extends LkSVG {
             "AŬ":  AŬPlato,
             "XAŬ":  XAŬPlato,
             "NEK":  NEKPlato,
-            "EKV": EKVPlato
+            "EKV": EKVPlato,
+            "KAJXAŬ":  KAJXAŬPlato
         }
 
 

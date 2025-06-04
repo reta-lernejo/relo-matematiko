@@ -95,7 +95,7 @@ rect.fono {
     cursor: pointer;    
 }
 
-.relajso .kerno {
+path.kerno {
     fill: none;
     stroke: black;
     stroke-dasharray: 5,2;

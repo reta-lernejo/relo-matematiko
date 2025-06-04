@@ -24,7 +24,7 @@ const BM_EN1 = 0b1000<<4; //<<12;
 const BM_RK0 = 0b1111<<8
 const BM_RK1 = 0b1111<<12;
 // bitmaskoj bildigo relajsaj ŝaltaj kolumnoj -> eliroj 0 kaj 1
-// eliro estas taktiva (elkondukas elektron) se ĉiuj relajsoŝaltiloj
+// eliro estas aktiva (elkondukas elektron) se ĉiuj relajsoŝaltiloj
 // en la koncerna kolumno estas fermitaj 
 // (=1 - la eliro estas konektita al la koncerna drato)
 const BM_EL0 = 0b111<<16;
@@ -49,17 +49,18 @@ const RK7 = 0b1111;
 
 // el0 = el1
 const EL1 = 0b0001;
-const EL2 = 0b0010;
 const EL3 = 0b0011;
+const EL4 = 0b0100;
 //const for_mov = 0b0011;
 
 const NE  = RE1 | RK1<<8 | EL1<<16;
 const KAJ = RE0 | RE0<<4 | RK1<<8 | RK1<<12 | EL1<<16 | EL1<<20;
 const NEK = RE1 | RE1<<4 | RK1<<8 | RK1<<12 | EL1<<16 | EL1<<20;
-const NKAJ= RE1 | RE1<<4 | RK2<<8 | RK1<<12 | EL1<<16 | EL2<<20;
-const AŬ  = RE0 | RE0<<4 | RK2<<8 | RK1<<12 | EL1<<16 | EL2<<20;
+const NKAJ= RE1 | RE1<<4 | RK2<<8 | RK1<<12 | EL3<<16 | EL3<<20;
+const AŬ  = RE0 | RE0<<4 | RK2<<8 | RK1<<12 | EL3<<16 | EL3<<20;
 const XAŬ = RE2 | RE1<<4 | RK3<<8 | RK3<<12 | EL3<<16 | EL3<<20;
 const EKV = RE2 | RE2<<4 | RK3<<8 | RK3<<12 | EL3<<16 | EL3<<20;
+const KAJXAŬ = RE2 | RE1<<4 | RK7<<8 | RK7<<12 | EL3<<16 | EL4<<20;
 
 const UNUO = 50; // kampoj de platoj kaj panelo estas 50x50 punktoj, 
                  // plato kun unu relajso estas 100x50, kun du relajsoj estas 100x100
@@ -105,6 +106,11 @@ class LPordo {
     rk(n) {
         if (n == 0) return (this.aranĝo & BM_RK0) >> 8;
         if (n == 1) return (this.aranĝo & BM_RK1) >> 12;
+    }
+
+    el_(n) {
+        if (n == 0) return (this.aranĝo & BM_EL0) >> 16;
+        if (n == 1) return (this.aranĝo & BM_EL1) >> 20;
     }
 
     /** kiom da ŝaltilovicoj ni havas. Ni kalkulas tion el la eliroj */
@@ -377,6 +383,10 @@ class LSVG {
         elm.append(id);
     }
 
+    static unuo(pt) {
+        return pt/50*UNUO;
+    }
+
     static uuid() {
         if (typeof crypto !== 'undefined' && crypto.randomUUID) {
             return crypto.randomUUID();
@@ -484,6 +494,10 @@ class LSVGPlato extends LPlato {
         })
     }
 
+    nomo(nom) {
+        const t = LSVG.e("text",{ x: 1/5*UNUO, y: 3/10*UNUO}, nom);
+        this.g.append(t);
+    }
 
     kontakto(x=2,y=20,e) {
         const c = LSVG.e("circle",{ class: "kontakto", cx: x, cy: y, r: 2 });   
@@ -742,22 +756,68 @@ class LPordPlato extends LSVGPlato {
         this.relajso(pordo.re(0),pordo.rk(0),X,2/5*UNUO);
         if (rel1) this.relajso(pordo.re(1),pordo.rk(1),X,7/5*UNUO);
 
-        const xe = 90+X.length;
-        for (let i = 0; i<X.length; i++) {
-            const b0 = (pordo.rk(0) & (1<<i))>>i;
-            const b1 = (pordo.rk(1) & (1<<i))>>i;
-            const Y = Yj[ b0 | (b1<<1) ];
-            this.drato(X[i],xe,Y)
+        const el0 = pordo.el_(0);
+        const el1 = pordo.el_(1);
+
+        // ni unue traktas la pli simplan kazon, kiam
+        // ambaŭ eliroj estas kunigitaj aŭ entute estas
+        // nur unu relajso kaj unu eliro
+        if (el0 == el1 || el1 == 0) {
+            const xe = 90+X.length;
+
+            // ĉiu kolumno da relajsoŝaltiloj
+            for (let i = 0; i<X.length; i++) {
+                // kiu relajso havas ŝaltilon en tiu kolumno estas
+                // difinita en rk-bitoj
+                const b0 = (pordo.rk(0) & (1<<i))>>i;
+                const b1 = (pordo.rk(1) & (1<<i))>>i;
+                // laŭ tiuo ni elektas la diversajn y-koordinatojn
+                const Y = Yj[ b0 | (b1<<1) ];
+                this.drato(X[i],xe,Y);
+            }
+
+            if (el0 == el1) {
+                // la du eliroj estas konektitaj
+                // do ambaŭ donas unu saman rezulton
+                this.eliro(3,xe,ye)
+            } else if (el1 == 0) {
+                this.eliro(1,xe,ye);
+            }            
+        } else {
+            // en la pli komplika kazo la diversaj kolumnoj
+            // distribuiĝas al la du eliroj laŭ la eliro-bitoj aparte
+            const xe1 = LSVG.unuo(88);
+            const xe2 = LSVG.unuo(92);
+
+            // ĉiu kolumno da relajsoŝaltiloj
+            for (let i = 0; i<X.length; i++) {
+                // kiu relajso havas ŝaltilon en tiu kolumno estas
+                // difinita en rk-bitoj
+                const b0 = (pordo.rk(0) & (1<<i))>>i;
+                const b1 = (pordo.rk(1) & (1<<i))>>i;
+                // laŭ tiuo ni elektas la diversajn y-koordinatojn
+                const Y = Yj[ b0 | (b1<<1) ];
+
+                // se la kolumno i estas konektita al el0,
+                //ni devas elekti kiel fina y=92 kaj xe=88
+                // se al el1 ni elektu y=96, xe=92
+                let xe, ye;
+                if (el0 & (1<<i)) {
+                    xe = xe1;
+                    ye = LSVG.unuo(92)
+                } else if (el1 & (1<<i)) {
+                    xe = xe2;
+                    ye = LSVG.unuo(96)
+                };
+                Y[Y.length-1] = ye;
+                this.drato(X[i],xe,Y);
+            }
+
+            this.eliro(1,xe1,ye-4);
+            this.eliro(2,xe2,ye);
         }
 
-        this.eliro(1+rel1,xe,ye);
-
         if(nomo) this.nomo(nomo);
-    }
-
-    nomo(nom) {
-        const t = LSVG.e("text",{ x: 1/5*UNUO, y: 3/10*UNUO}, nom);
-        this.g.append(t);
     }
 
     relajso(re,rk,X,y) {
@@ -830,9 +890,9 @@ class LPordPlato extends LSVGPlato {
         this.g.append(h);
     }
 
-    eliro(n=2, x=90, yd=95) { //,e="") {
-        const y1 = 20;
-        const y2 = (n==2? 70:undefined);
+    eliro(n=3, x=90, yd=95) { //,e="") {
+        const y1 = n==1? 20:70;
+        const y2 = n==3? 70:undefined;
 
         //this.kontakto(98,y1.e);
         let d = `M100 ${y1}L${x} ${y1}`;
@@ -846,16 +906,18 @@ class LPordPlato extends LSVGPlato {
 
 class LIDPlato extends LSVGPlato {
     
-    constructor(id,eniro=0) {
+    constructor(id,eniro=0,nomo="ID"+eniro) {
         super(id,1,2,2,2)
         
         const y0 = (2/5+eniro)*UNUO;       
         const y1 = (7/5-eniro)*UNUO
-        const lumo = this.lumo(7,y0);
+        //const lumo = this.lumo(7,y0);
         //this.lumoj[5-v] = [lumo,false];
         //dratoj.kontakto(48,y);
-        const d = LSVG.e("path",{ d: `M${0} ${y0}L${UNUO} ${y0}L${2*UNUO} ${y0}M${UNUO} ${y0}L${2*UNUO} ${y1}` });
-        this.g.append(d,lumo);
+        const d = LSVG.e("path",{ d: `M${4} ${y0}L${UNUO} ${y0}L${2*UNUO} ${y0}M${UNUO} ${y0}L${2*UNUO} ${y1}` });
+        this.g.append(d);
+        this.kontakto(2,y0)
+        if (nomo) this.nomo(nomo);
     }
 }
 
