@@ -128,19 +128,19 @@ class LPordo {
 
     /**
      * skribas la staton de eniroj en la koncernajn bitojn
-     * @param {*} e0 
-     * @param {*} e1 
+     * @param {int} eniro numero de la eniro (0,1) 
+     * @param {bool} aktiva stato de la eniro (True: aktiva, False: neaktiva)
      * @returns 
      */
-    eniro(e0, e1) {
+    ŝaltu(eniro, aktiva) {
         // ni skribu la aktualajn enirostatojn
-        // ni uzas -e0, ĉar ĉe -1 ĉiuj bitoj estas 1, do ankaŭ la maskita bito
+        // ni uzas -aktiva, ĉar ĉe -1 ĉiuj bitoj estas 1, do ankaŭ la maskita bito
         // dum ĉe -0 senŝanĝe ĉiuj bitoj restas 0
-        const bm =  BM_EN0 | BM_EN1;
-        // purigu la du bitojn
+        const bm = eniro? BM_EN1 : BM_EN1;
+        // purigu la eniro-biton
         this.aranĝo &= ~bm;
-        // metu la novajn valorojn
-        this.aranĝo |= (-e0 & BM_EN0) | (-e1 & BM_EN1);
+        // metu la novan valoron
+        this.aranĝo |= (-aktiva & bm);
     }
 
     /**
@@ -238,7 +238,10 @@ class LPlato {
     constructor(id, eniroj, eliroj) {
         this.id = id || LSVG.uuid();
 
+        // nombro da eniroj
         this.eniroj = eniroj;
+        // al eliroj ni ligos enirojn de najbaraj platoj
+        // por tiuj rilatoj ni kreas areon (vd. ligu/malligu)
         if (eliroj) this.eliroj = new Array(eliroj);        
     }
 
@@ -248,7 +251,18 @@ class LPlato {
 
     malligu(el) {
         this.eliroj[el] = undefined
-    }    
+    }
+
+    /**
+     * ŝaltu eniron al aktiva aŭ malaktiva stato
+     * la logiko dependas la platospeco, do tie ĉi
+     * estas nur abstrakta funkcio
+     * @param {int} nro 
+     * @param {bool} aktiva 
+     */
+    ŝaltu(eniro, aktiva) {
+        throw("Abstrakta funkcio devas esti relaigita en la aparta subklaso de Plato!")
+    }
 }
 
 /**
@@ -734,9 +748,9 @@ class LPordPlato extends LSVGPlato {
         const unuoj = 1+rel1
         super(id,unuoj,unuoj,2,unuoj);
         this.pordo = pordo;
+        this.relajsoj = [];
 
-        // 1 aŭ 2 relajsoj
-
+        // koordinatoj laŭ la diversaj aranĝoj
         const X=[
             [75],
             [75,60],
@@ -753,8 +767,9 @@ class LPordPlato extends LSVGPlato {
         ][0+rel1];
         const ye=[45,96][0+rel1];
 
-        this.relajso(pordo.re(0),pordo.rk(0),X,2/5*UNUO);
-        if (rel1) this.relajso(pordo.re(1),pordo.rk(1),X,7/5*UNUO);
+        // 1 aŭ 2 relajsoj
+        this.relajso(0,X,2/5*UNUO);
+        if (rel1) this.relajso(1,X,7/5*UNUO);
 
         const el0 = pordo.el_(0);
         const el1 = pordo.el_(1);
@@ -820,8 +835,15 @@ class LPordPlato extends LSVGPlato {
         if(nomo) this.nomo(nomo);
     }
 
-    relajso(re,rk,X,y) {
+    relajso(nro,X,y) {
+        const rk = this.pordo.rk(nro);
+        const re = this.pordo.re(nro);
+        const id_rel = this.id + '_rel' + nro;
+
         if (rk) {
+            // grupo por kunigi partojn de la relajso
+            const rel = LSVG.e("g",{id: id_rel});
+
             // kontakto
             const c = LSVG.e("circle",{ class: "kontakto", cx: 2, cy: y, r: 2 });   
             /*
@@ -835,21 +857,25 @@ class LPordPlato extends LSVGPlato {
             const r = LSVG.e("rect",{ x: 2/5*UNUO, y: y+5, width: 2/5*UNUO, height: 12/50*UNUO });
             // drato
             const p = LSVG.e("path",{ d: `M5 0L${3/5*UNUO} 0L${3/5*UNUO} 5M${3/5*UNUO} ${17/50*UNUO}L${3/5*UNUO} ${24/50*UNUO}`,
-            transform: `translate(0 ${y})`
+                transform: `translate(0 ${y})`
             }); 
             // maso
             const l = LSVG.e("line",{ class: "maso", x1: 26/50*UNUO, y1: y+24/50*UNUO, x2: 34/50*UNUO, y2: y+24/50*UNUO });
-            this.g.append(c,r,p,l);
+
+            rel.append(c,r,p,l);
            
             for (let i = 0; i<X.length; i++) {
                 if ((rk & (1<<i)) != 0)
-                    this.ponto(X[i],y,((re & (1<<i)) != 0))
+                    this.ponto(rel,X[i],y,((re & (1<<i)) != 0))
             }
+
+            this.g.append(rel);
+            this.relajsoj[nro] = rel;
         }
     }
 
     // ŝaltilo de la relajso
-    ponto(w,y,fermita) {
+    ponto(rel,w,y,fermita) {
         const ys = y+11/50*UNUO;
         const fend = -1 + 6*(1-fermita);
         // strekita
@@ -864,7 +890,7 @@ class LPordPlato extends LSVGPlato {
             cy: y+18/50*UNUO,
             r: 1
         });
-        this.g.append(p,klap,l,c);
+        rel.append(p,klap,l,c);
 
         // const pt = {w: w, fermita0: fermita, fermita: fermita, klapo: klap};
         // this.pontoj.push(pt);
@@ -902,6 +928,39 @@ class LPordPlato extends LSVGPlato {
         const p = LSVG.e("path",{ d });
         this.g.append(p);
     }    
+
+    ŝaltu(eniro,aktiva) {
+        // ŝanĝu la staton de la eniro
+        this.pordo.ŝaltu(eniro,aktiva);
+        const rel = this.relajsoj[eniro];
+
+        // ŝanĝu staton de la kontakto
+        const kontakto = rel.querySelector(`.kontakto`);
+        if (kontakto) kontakto.classList.toggle("aktiva",aktiva);
+
+        // ŝanĝu la staton de la ŝaltiloklapoj
+        rel.querySelectorAll(".klapo").forEach((pt) => {
+            // la turnopunkto troviĝas en la fino de la d-pado
+            const d = pt.getAttribute("d").split("L");
+            const [x,y] = d[d.length-1].split(" ");
+            //Lk.a(klapo, {d: `M${xw-fend} ${y+9}L${xw} ${y+25}`});
+            if (aktiva) {
+                LSVG.a(pt,{transform: `rotate(15 ${x} ${y})`});
+                //pt.fermita = !pt.fermita0;
+            } else {
+                pt.removeAttribute("transform");
+                //pt.fermita = pt.fermita0;
+            }
+        });
+
+        // ŝanĝu enirostatojn de najbaraj platoj laŭ propra elirostatoj
+        for (let njb of this.eliroj) {
+            // ŝaltu ligitajn platojn
+            if (njb) {
+                njb[0].ŝaltu(njb[1]);
+            }
+        }
+    }
 }
 
 class LIDPlato extends LSVGPlato {
@@ -988,26 +1047,26 @@ class LEnirPlato extends LSVGPlato {
         this.g.append(c1,c2,l);
     }
 
-    ŝaltu(nro, kunigoj=false) {
-        const lumo = this.lumoj[nro];
+    ŝaltu(eliro, kunigoj=false) {
+        const lumo = this.lumoj[eliro];
         const aktiva = !lumo[1];
 
         // ŝanĝu staton de la lumo
-        //this.lumoj[nro][1] = aktiva;
+        //this.lumoj[eliro][1] = aktiva;
         lumo[1] = aktiva;
         lumo[0].classList.toggle("aktiva",aktiva);
 
         // ŝaltu ligitajn platojn
-        const njb = this.eliroj[nro];
-        if (njb) njb[0].ŝaltu(njb[1]);
+        const njb = this.eliroj[eliro];
+        if (njb) njb[0].ŝaltu(njb[1],aktiva);
 
         // kunigitajn elirojn ŝaltu al sama stato
         if (kunigoj) {
             this.kunigoj.forEach((kn) => {
-                if (kn.has(nro)) {
+                if (kn.has(eliro)) {
                     // ŝaltu ankaŭ ĉiujn kunigitajn dratojn (troveblaj per indekso en this.el)
                     kn.forEach((d) => {
-                        if (d != nro) this.ŝaltu(d, false); //this.eliroj[d] = aktiva
+                        if (d != eliro) this.ŝaltu(d, false); //this.eliroj[d] = aktiva
                     })
                 }
             });
@@ -1038,12 +1097,9 @@ class LElirPlato extends LSVGPlato {
         this.g.append(m);
     }
 
-    ŝaltu(nro) {
-        const lumo = this.lumoj[nro];
-        const aktiva = !lumo[1];
-
+    ŝaltu(eniro,aktiva) {
+        const lumo = this.lumoj[eniro];
         // ŝanĝu staton de la lumo
-        //this.lumoj[nro][1] = aktiva;
         lumo[1] = aktiva;
         lumo[0].classList.toggle("aktiva",aktiva);
     }

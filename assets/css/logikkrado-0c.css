@@ -105,7 +105,7 @@ path.kerno {
     font-size: 10pt;
 }
 
-.aktiva .kontakto {
+.kontakto.aktiva {
     fill: red;
 }
 
