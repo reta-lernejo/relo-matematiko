@@ -657,7 +657,7 @@ class LPanelo extends LSVG {
         const r = LSVG.e("rect", {
             class: "panelo",
             width: vb[2],
-            height: vb[3],
+            height: parseInt(vb[3])+parseInt(vb[1]), // se ni havas negativa y-koordinaton, ni reduktu la altecon
             rx: 5
         });
         this.svg.append(r);
@@ -729,8 +729,8 @@ class LPanelo extends LSVG {
 
         function kreu_platon(id) {
             const [Pk,...args] = {
-                "IDx":  [LIDPlato,0],
-                "IDy":  [LIDPlato,1],
+                "IDx":  [LIDPlato,0,forigo],
+                "IDy":  [LIDPlato,1,forigo],
                 "NE":   [LPordPlato,NE,forigo],
                 "KAJ":  [LPordPlato,KAJ,forigo],
                 "NKAJ": [LPordPlato,NKAJ,forigo],
@@ -1168,8 +1168,8 @@ class LPordPlato extends LSVGPlato {
 
 class LIDPlato extends LSVGPlato {
     
-    constructor(id,eniro=0,nomo="ID"+eniro) {
-        super(id,1,2,2,2);
+    constructor(id,eniro=0,forigo,nomo="ID"+eniro) {
+        super(id,1,2,2,2,forigo);
         this.eniro = eniro; // 0 aŭ 1
         this.aktiva = false;
         
@@ -1202,7 +1202,7 @@ class LIDPlato extends LSVGPlato {
 class LEnirPlato extends LSVGPlato {
 
     constructor(id) {
-        super(id,0,6,1,6,false);
+        super(id,0,6,1,6);
         //super(id,forigebla,"logikplato eniroj",50,300);
 
         // per kunigoj ni povas doni al pluraj 
@@ -1299,7 +1299,7 @@ class LEnirPlato extends LSVGPlato {
 
 class LElirPlato extends LSVGPlato {
     constructor(id) {
-        super(id,6,0,1,6,false);
+        super(id,6,0,1,6);
         this.lumoj = new Array(6);
         //super(id,forigebla,"logikplato eliroj",50,300);
         

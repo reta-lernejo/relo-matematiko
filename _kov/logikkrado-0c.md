@@ -18,7 +18,7 @@ https://de.wikipedia.org/wiki/Logikgatter
 lanĉe(() => {
 
   const aranĝo = {
-    menuo: ["ID","NE","KAJ","NKAJ","AŬ","XAŬ","NEK","EKV"],
+    menuo: ["IDx","IDy","NE","KAJ","NKAJ","AŬ","XAŬ","NEK","EKV"],
     platoj: [
       ["EN", 0,0],
       ["EL", 7,0],
