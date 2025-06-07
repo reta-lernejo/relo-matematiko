@@ -56,7 +56,7 @@ const EL4 = 0b0100;
 const NE  = RE1 | RK1<<8 | EL1<<16;
 const KAJ = RE0 | RE0<<4 | RK1<<8 | RK1<<12 | EL1<<16 | EL1<<20;
 const NEK = RE1 | RE1<<4 | RK1<<8 | RK1<<12 | EL1<<16 | EL1<<20;
-const NKAJ= RE1 | RE1<<4 | RK2<<8 | RK1<<12 | EL3<<16 | EL3<<20;
+const NKAJ= RE2 | RE1<<4 | RK2<<8 | RK1<<12 | EL3<<16 | EL3<<20;
 const AŬ  = RE0 | RE0<<4 | RK2<<8 | RK1<<12 | EL3<<16 | EL3<<20;
 const XAŬ = RE2 | RE1<<4 | RK3<<8 | RK3<<12 | EL3<<16 | EL3<<20;
 const EKV = RE2 | RE2<<4 | RK3<<8 | RK3<<12 | EL3<<16 | EL3<<20;
@@ -136,7 +136,7 @@ class LPordo {
         // ni skribu la aktualajn enirostatojn
         // ni uzas -aktiva, ĉar ĉe -1 ĉiuj bitoj estas 1, do ankaŭ la maskita bito
         // dum ĉe -0 senŝanĝe ĉiuj bitoj restas 0
-        const bm = eniro? BM_EN0 : BM_EN1;
+        const bm = eniro? BM_EN1 : BM_EN0;
         // purigu la eniro-biton
         this.aranĝo &= ~bm;
         // metu la novan valoron
@@ -176,7 +176,7 @@ class LPordo {
         // depende de unua eniro, ni supozas ke ĉiuj kvar bitoj
         // estas 0, se ĝi ne ekzistas (alikaze oni devus aldoni >> 3 por havi nur
         // la ekzistobiton sole)
-        const rk0 = this.aranĝo & BM_RK0;
+        const rk0 = (this.aranĝo & BM_RK0) >> 8;
         if (rk0) {
             // relajsostato depende de e0
             const re0 = this.aranĝo & BM_RE0;
@@ -186,7 +186,7 @@ class LPordo {
         }
 
         // se ekzistas dua relajso ni alkalkulu ĝin
-        const rk1 = (this.aranĝo & BM_RK1) >> 4;
+        const rk1 = (this.aranĝo & BM_RK1) >> 12;
         if (rk1) {
             // relajsostato depende de e1
             const re1 = (this.aranĝo & BM_RE1) >> 4;
@@ -207,12 +207,17 @@ class LPordo {
      */
     skribu_staton() {
         console.log(
-              "EN0:" + ((this.aranĝo & BM_EN0) >> 3).toString(2) 
+               "EN0:" + ((this.aranĝo & BM_EN0) >> 3).toString(2) 
             + " EN1:" + ((this.aranĝo & BM_EN1) >> 7).toString(2));
-        console.log("RE0:" + (this.aranĝo & BM_RE0).toString(2));
-        console.log("RE1:" + ((this.aranĝo & BM_RE1) >> 4).toString(2));
-        console.log("EL0:" + ((this.aranĝo & BM_EL0) >> 16).toString(2));
-        console.log("EL1:" + ((this.aranĝo & BM_EL1) >> 20).toString(2));
+        console.log(
+               "RE0:" + (this.aranĝo & BM_RE0).toString(2)
+            + " RK0:" + ((this.aranĝo & BM_RK0) >> 8).toString(2));
+        console.log(
+               "RE1:" + ((this.aranĝo & BM_RE1) >> 4).toString(2)
+            + " RK1:" + ((this.aranĝo & BM_RK1) >> 12).toString(2));
+        console.log(
+               "EL0:" + ((this.aranĝo & BM_EL0) >> 16).toString(2)
+            + " EL1:" + ((this.aranĝo & BM_EL1) >> 20).toString(2));
 //        console.log(
 //            "FOR:" + ((this.aranĝo & BM_FOR) >> 16).toString(2) 
 //          + " MOV:" + ((this.aranĝo & BM_MOV) >> 17).toString(2));
@@ -251,6 +256,15 @@ class LPlato {
         this.eliroj[el] = undefined
     }
 
+
+    /**
+     * Abstrakta funkcio redonanta la elirostaton 
+     * @param {*} nro numero de la eliro
+     */
+    el(nro) {
+        throw("Abstrakta funkcio devas esti realigita en la aparta subklaso de Plato!")
+    }
+
     /**
      * ŝaltu eniron al aktiva aŭ malaktiva stato
      * la logiko dependas la platospeco, do tie ĉi
@@ -259,8 +273,21 @@ class LPlato {
      * @param {bool} aktiva 
      */
     ŝaltu(eniro, aktiva) {
-        throw("Abstrakta funkcio devas esti relaigita en la aparta subklaso de Plato!")
+        throw("Abstrakta funkcio devas esti realigita en la aparta subklaso de Plato!")
     }
+
+    ŝaltu_najbarojn() {
+        // ŝanĝu enirostatojn de najbaraj platoj laŭ propra elirostatoj
+        for (let nro=0; nro<this.eliroj.length; nro++) {
+            // ŝaltu ligitajn platojn
+            const njb = this.eliroj[nro];
+            if (njb) {
+                const s_el = this.el(nro);
+                njb[0].ŝaltu(njb[1],s_el);
+            }
+        }
+    }
+
 }
 
 /**
@@ -681,12 +708,18 @@ class LPanelo extends LSVG {
                 const njb1 = this.najbaro_maldekstra(k-1,_v);
                 if (njb1) {
                     njb1.plato.ligu(_v-njb1.v,plato,_v-v);
+                    // ŝaltu la platon laŭ la elirostato de la najbaro
+                    const s_el = njb1.plato.el(_v-njb1.v);
+                    plato.ŝaltu(_v-v,s_el);
                 }
 
                 // kaj dekstre
                 const njb2 = this.najbaro_dekstra(k+dk,_v);
                 if (njb2) {
                     plato.ligu(_v-v,njb2.plato,_v-njb2.v)
+                    // ŝaltu la najbaran platon laŭ la propra elirostato 
+                    const s_el = plato.el(_v-v);
+                    njb2.plato.ŝaltu(_v-njb2.v,s_el);
                 }
             }
         }
@@ -927,7 +960,23 @@ class LPordPlato extends LSVGPlato {
         this.g.append(p);
     }    
 
+    /**
+     * Redonas elirostaton
+     * @param {*} nro 
+     * @returns 
+     */
+    el(nro) {
+        return this.pordo.el(nro);
+    }
+
+    /**
+     * Ŝanĝas enirostaton kaj laŭe ŝaltas relajsojn kaj 
+     * daŭrigas ankaŭ ŝanĝi la dekstrnajbarajn elirostatojn
+     * @param {*} eniro 
+     * @param {*} aktiva 
+     */
     ŝaltu(eniro,aktiva) {
+        console.debug(`ŝaltu ${this.id}:en${eniro}:${aktiva}`)
         // ŝanĝu la staton de la eniro
         this.pordo.ŝaltu(eniro,aktiva);
         const rel = this.relajsoj[eniro];
@@ -951,22 +1000,18 @@ class LPordPlato extends LSVGPlato {
             }
         });
 
-        // ŝanĝu enirostatojn de najbaraj platoj laŭ propra elirostatoj
-        for (let nro of [0,1]) {
-            // ŝaltu ligitajn platojn
-            const njb = this.eliroj[nro];
-            if (njb) {
-                const s_el = this.pordo.el(nro);
-                njb[0].ŝaltu(njb[1],s_el);
-            }
-        }
+        this.pordo.skribu_staton();
+
+        this.ŝaltu_najbarojn();
     }
 }
 
 class LIDPlato extends LSVGPlato {
     
     constructor(id,eniro=0,nomo="ID"+eniro) {
-        super(id,1,2,2,2)
+        super(id,1,2,2,2);
+        this.eniro = eniro; // 0 aŭ 1
+        this.aktiva = false;
         
         const y0 = (2/5+eniro)*UNUO;       
         const y1 = (7/5-eniro)*UNUO
@@ -977,6 +1022,20 @@ class LIDPlato extends LSVGPlato {
         this.g.append(d);
         this.kontakto(2,y0)
         if (nomo) this.nomo(nomo);
+    }
+
+    el(nro) {
+        return this.aktiva;
+    }
+
+    ŝaltu(nro,aktiva) {
+        if (this.eniro == nro) {
+            this.aktiva = aktiva;
+            const kontakto = this.g.querySelector(".kontakto");
+            if (kontakto) kontakto.classList.toggle("aktiva",aktiva);
+
+            this.ŝaltu_najbarojn();
+        }
     }
 }
 
@@ -1045,6 +1104,10 @@ class LEnirPlato extends LSVGPlato {
         const c2 = LSVG.e("circle",{ cx: xj, cy: y, r: 1 });
         const l = LSVG.e("path",{ d: `M${xi} ${y}Q${(xi+xj)/2} ${y+3} ${xj} ${y}` });
         this.g.append(c1,c2,l);
+    }
+
+    el(nro) {
+        return this.lumoj[nro][1];
     }
 
     ŝaltu(eliro, kunigoj=false) {

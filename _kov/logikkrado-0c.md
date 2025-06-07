@@ -43,19 +43,19 @@ lanĉe(() => {
   en.kunigu(2);
   en.kunigu(3);
   panelo.metu(en,0,0);
-/*
+
   const ne = new LPordPlato("NE",NE); // | for_mov<<16);
   panelo.metu(ne,3,0);    
-*/
+/*
   const kaj = new LPordPlato("KAJ",KAJ); // | for_mov<<16);
   panelo.metu(kaj,3,1);    
-/*
+
   const nek = new LPordPlato("NEK",NEK); // | for_mov<<16);
   panelo.metu(nek,3,3);    
-
+*/
   const nkaj = new LPordPlato("NKAJ",NKAJ); // | for_mov<<16);
   panelo.metu(nkaj,5,0);    
-
+/*
   const aŭ = new LPordPlato("AŬ",AŬ); // | for_mov<<16);
   panelo.metu(aŭ,5,2);    
 
