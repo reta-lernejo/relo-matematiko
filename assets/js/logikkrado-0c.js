@@ -40,6 +40,7 @@ const BM_EL1 = 0b111<<20;
 const RE0 = 0b0000;
 const RE1 = 0b0001;
 const RE2 = 0b0010;
+const RE3 = 0b0011;
 const RE4 = 0b0100;
 
 const RK1 = 0b1001;
@@ -56,8 +57,8 @@ const EL4 = 0b0100;
 const NE  = RE1 | RK1<<8 | EL1<<16;
 const KAJ = RE0 | RE0<<4 | RK1<<8 | RK1<<12 | EL1<<16 | EL1<<20;
 const NEK = RE1 | RE1<<4 | RK1<<8 | RK1<<12 | EL1<<16 | EL1<<20;
-const NKAJ= RE2 | RE1<<4 | RK2<<8 | RK1<<12 | EL3<<16 | EL3<<20;
-const AŬ  = RE0 | RE0<<4 | RK2<<8 | RK1<<12 | EL3<<16 | EL3<<20;
+const NKAJ= RE3 | RE3<<4 | RK2<<8 | RK1<<12 | EL3<<16 | EL3<<20;
+const AŬ  = RE1 | RE2<<4 | RK2<<8 | RK1<<12 | EL3<<16 | EL3<<20;
 const XAŬ = RE2 | RE1<<4 | RK3<<8 | RK3<<12 | EL3<<16 | EL3<<20;
 const EKV = RE2 | RE2<<4 | RK3<<8 | RK3<<12 | EL3<<16 | EL3<<20;
 const KAJXAŬ = RE2 | RE1<<4 | RK7<<8 | RK7<<12 | EL3<<16 | EL4<<20;
@@ -180,7 +181,8 @@ class LPordo {
         if (rk0) {
             // relajsostato depende de e0
             const re0 = this.aranĝo & BM_RE0;
-            const rs0 = -e0 ^ (re0 & rk0);
+            //const rs0 = (-e0 ^ re0) & rk0;
+            const rs0 = (-e0 & rk0) ^ re0;
             // elirostato el stato de relajso 0
             s_el = rs0 & el;    
         }
@@ -190,7 +192,9 @@ class LPordo {
         if (rk1) {
             // relajsostato depende de e1
             const re1 = (this.aranĝo & BM_RE1) >> 4;
-            const rs1 = -e1 ^ (re1&rk1);
+            // const rs1 = (-e1 ^ re1) & rk1;
+            const rs1 = (-e1 & rk1) ^ re1;
+
             // kombinita elirostato el relajso 0 kaj 1
             s_el &= rs1 & el;    
         }
@@ -217,8 +221,11 @@ class LPordo {
             + " RK1:" + ((this.aranĝo & BM_RK1) >> 12).toString(2));
         console.log(
                "EL0:" + ((this.aranĝo & BM_EL0) >> 16).toString(2)
-            + " EL1:" + ((this.aranĝo & BM_EL1) >> 20).toString(2));
-//        console.log(
+            + " s: " + this.el(0));
+        console.log(
+               "EL1:" + ((this.aranĝo & BM_EL1) >> 20).toString(2)
+            + " s: " + this.el(1));
+                //        console.log(
 //            "FOR:" + ((this.aranĝo & BM_FOR) >> 16).toString(2) 
 //          + " MOV:" + ((this.aranĝo & BM_MOV) >> 17).toString(2));
   }
@@ -646,6 +653,8 @@ class LPanelo extends LSVG {
 
         this.svg.append(g,g1);
     }
+
+
 
     /**
      * Maldekstra najbaro
