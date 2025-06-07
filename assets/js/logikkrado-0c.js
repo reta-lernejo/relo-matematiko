@@ -30,11 +30,7 @@ const BM_RK1 = 0b1111<<12;
 const BM_EL0 = 0b111<<16;
 const BM_EL1 = 0b111<<20;
 
-// restas 8 pli altaj bitoj por 
-// aliaj ecoj kiel moveblo kaj forigeblo de la plateto de/sur la panelo
-//const BM_FOR = 0b0001 << 28; // forigebla
-//const BM_MOV = 0b0010 << 28; // movebla/markebla
-//const BM_MRK = 0b0100 << 28; // markita - antaŭ formovi
+// restas 8 pli altaj bitoj por aliaj ecoj
 
 // diversa agordo de relajsoj kaj eliroj
 const RE0 = 0b0000;
@@ -492,7 +488,7 @@ class LSVG {
 
 class LSVGPlato extends LPlato {
 
-    constructor(id,eniroj,eliroj,larĝo,alto,forigo) {
+    constructor(id,eniroj,eliroj,larĝo,alto,forigo,marko) {
         super(id,eniroj,eliroj);
 
         // formato en unuoj
@@ -532,8 +528,7 @@ class LSVGPlato extends LPlato {
         }
 
         r.addEventListener("click",() => {
-            if (this.markebla)
-                this.panelo.marku(this);            
+            marko(this);
         })
     }
 
@@ -573,6 +568,17 @@ class LSVGPlato extends LPlato {
         this.g.append(gl)   
         return gl;     
     }
+
+    marku(mark) {
+        const r = this.g.querySelector("rect.plato");
+        if (r) {
+            r.classList.toggle("markita",mark);
+        }
+    }
+
+    markita() {
+        return this.g.querySelector(".markita");
+    }    
 
 }
 
@@ -687,22 +693,24 @@ class LPanelo extends LSVG {
             
         r.addEventListener("click",(event) => {
             // se iu plato estas martkita, metu ĝin en la montritan lokon
-            const markita = this.markita();
-            if (markita) {
+            const plato = this.markita();
+            if (plato) {
                 const pt = this.event_koordinatoj(event);
                 const kolumno = Math.floor(pt.x/UNUO);
                 const vico = Math.floor(pt.y/UNUO);
-                console.log("v"+v+" h"+h);
+                console.log("vico: "+vico+" kolumno: "+kolumno);
 
-                const dk = markita.larĝo
-                const dv = markita.alto
+                const dk = plato.larĝo
+                const dv = plato.alto
                    
                 // se la loko estas libera ni povas movi la markitan 
                 // platon tien
                 if (this.kovro.libera(dk,dv,kolumno,vico)) {
                     // malokupu nunan lokon kaj okupu la novan
-                    this.kovro.malokupu(dk,dv,undefined,undefined);
-                    this.kovro.okupu(dk,dv,kolumno,vico);
+                    //this.kovro.malokupu(dk,dv,undefined,undefined);
+                    //this.kovro.okupu(dk,dv,kolumno,vico);
+                    this.forigu(plato);
+                    this.metu(plato,kolumno,vico);
                 }
             }
         });
@@ -727,18 +735,22 @@ class LPanelo extends LSVG {
             self.forigu(plato); 
         }
 
+        function marko(plato) {
+            self.marku(plato);
+        }
+
         function kreu_platon(id) {
             const [Pk,...args] = {
-                "IDx":  [LIDPlato,0,forigo],
-                "IDy":  [LIDPlato,1,forigo],
-                "NE":   [LPordPlato,NE,forigo],
-                "KAJ":  [LPordPlato,KAJ,forigo],
-                "NKAJ": [LPordPlato,NKAJ,forigo],
-                "AŬ":   [LPordPlato,AŬ,forigo],
-                "XAŬ":  [LPordPlato,XAŬ,forigo],
-                "NEK":  [LPordPlato,NEK,forigo],
-                "EKV":  [LPordPlato,EKV,forigo],
-                "KAJXAŬ": [LPordPlato,KAJXAŬ,forigo,'=1/&']
+                "ID0":  [LIDPlato,0,forigo,marko],
+                "ID1":  [LIDPlato,1,forigo,marko],
+                "NE":   [LPordPlato,NE,forigo,marko],
+                "KAJ":  [LPordPlato,KAJ,forigo,marko],
+                "NKAJ": [LPordPlato,NKAJ,forigo,marko],
+                "AŬ":   [LPordPlato,AŬ,forigo,marko],
+                "XAŬ":  [LPordPlato,XAŬ,forigo,marko],
+                "NEK":  [LPordPlato,NEK,forigo,marko],
+                "EKV":  [LPordPlato,EKV,forigo,marko],
+                "KAJXAŬ": [LPordPlato,KAJXAŬ,forigo,marko,'=1/&']
             }[id];
             return new Pk(id,...args);        
         }
@@ -927,17 +939,47 @@ class LPanelo extends LSVG {
         plato.g.remove();
     }    
 
+
+    /**
+     * Redonas markitan platon, se troviĝas tia
+     * @returns 
+     */
+    markita() {
+        for (const p of Object.values(this.platoj)) {
+            if (p.plato.markita()) {
+                console.log("markita: "+p.plato.id);
+                return(p.plato);
+            };
+        };
+    }    
+
+    /**
+     * Se la plato ne estas markita: markas la koncernan platon kaj malmarkas ĉiujn aliajn.
+     * Aliokaze ĝi estas malmarkita
+     * @param {*} plato 
+     */
+    marku(plato) {
+        if (plato.markita()) {
+            plato.marku(false);
+        } else {
+            Object.values(this.platoj).forEach((p) => {
+                if (p.plato === plato) p.plato.marku(true);
+                else p.plato.marku(false);
+            });  
+        }
+    }    
+
 }
 
 
 // plato kun logikpordo
 class LPordPlato extends LSVGPlato {
-    constructor(id,aranĝo,forigo,nomo=id) {
+    constructor(id,aranĝo,forigo,marko,nomo=id) {
         const pordo = new LPordo(aranĝo);
         const ŝlt = pordo.ŝlt();
         const rel1 = pordo.rk(1) != 0;
         const unuoj = 1+rel1
-        super(id,unuoj,unuoj,2,unuoj,forigo);
+        super(id,unuoj,unuoj,2,unuoj,forigo,marko);
         this.pordo = pordo;
         this.relajsoj = [];
 
