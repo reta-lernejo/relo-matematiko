@@ -579,13 +579,71 @@ class LSVGPlato extends LPlato {
 
 }
 
+
+class LMenuo {
+    constructor(id, klaso="menuo", w=400, h=20) {
+        this.id = id;
+
+        // SVG grupo-elemento, kiu entenas la grafikon de la ilo
+        this.g = LSVG.e("g",{
+            id: id,
+            class: klaso
+        });    
+
+        const r = LSVG.e("rect",{
+            width: w,
+            height: h,
+            rx: 5
+        });
+
+        this.g.append(r);
+    }
+
+    menueroj(...eroj) {
+        const y0 = 2;
+        const x0 = 5;
+        const h = 16;
+        const w = 32
+        eroj.forEach((ero,n) => {
+            const btn = LSVG.e("rect",{
+                id: ero,
+                class: "butono",
+                x: x0 + n*(w+2),
+                y: y0,
+                rx: 3,
+                width: w,
+                height: h
+            });
+            const t = LSVG.e("text",{
+                class: "butono",
+                x: x0-1 + w/2 + n*(w+2), 
+                y: y0+1.5 + h/2 // 1.5: iom pli sube pro supersignoj
+            },ero);
+            this.g.append(btn,t);
+        })
+    }
+
+    reago(rg) {
+        this.g.querySelectorAll(".butono").forEach((btn) => {
+            btn.addEventListener("click",() => {
+                const ero = btn.closest("rect.butono");
+                if (ero)
+                    {
+                        const id = ero.getAttribute("id");
+                        rg(id)
+                    }
+            });
+        });
+    }
+}
+
 /**
  * La panelo prizorgas la aranĝon de la logikpordoj (platoj) sur ĝi.
  */
 
 class LPanelo extends LSVG {
 
-    constructor(svg) {
+    constructor(svg,aranĝo) {
         super(svg);
 
         // ni uzas aranĝon de kampoj kun grandeco 50x50
@@ -598,6 +656,7 @@ class LPanelo extends LSVG {
         // ni devas prizorgi la okupitajn kau liberajn lokojn
         this.kovro = new LKovro(this.vicoj,this.kolumnoj);
 
+        // fono
         const r = LSVG.e("rect", {
             class: "panelo",
             width: vb[2],
@@ -652,8 +711,78 @@ class LPanelo extends LSVG {
         });
 
         this.svg.append(g,g1);
+
+        // se antaŭaranĝo de menuo/platoj estas donita, kreu ĝin
+        if (aranĝo) {
+            this.kreu(aranĝo)
+        }
     }
 
+
+    /**
+     * Kreu menuon kaj evtl. donitan aranĝon de platoj
+     * @param {*} aranĝo 
+     */
+    kreu(aranĝo) {
+
+        function kreu_platon(id) {
+            const [Pk,...args] = {
+                "IDx":  [LIDPlato,0],
+                "IDy":  [LIDPlato,1],
+                "NE":   [LPordPlato,NE],
+                "KAJ":  [LPordPlato,KAJ],
+                "NKAJ": [LPordPlato,NKAJ],
+                "AŬ":   [LPordPlato,AŬ],
+                "XAŬ":  [LPordPlato,XAŬ],
+                "NEK":  [LPordPlato,NEK],
+                "EKV":  [LPordPlato,EKV],
+                "KAJXAŬ": [LPordPlato,KAJXAŬ,'=1/&']
+            }[id];
+            return new Pk(id,...args);        
+        }
+
+        // kreu menuon por la diversaj logikplatoj
+        if (aranĝo.menuo) {
+            const menuo = new LMenuo("MENU");
+            menuo.menueroj(...aranĝo.menuo);
+            menuo.reago((ero) => {
+                const plato = kreu_platon(ero);
+                this.metu_ien(plato);
+            });
+        
+            this.ŝovu(menuo.g,0,-20);
+            this.svg.append(menuo.g);
+        }
+
+        if (aranĝo.platoj) {
+            for (const p of aranĝo.platoj) {
+
+                switch (p[0]) {
+                case "EN":
+                    // kreu eniron
+                    const EN = new LEnirPlato("EN");
+                    EN.markebla = false;
+                    // PLIBONIGU:
+                    // kiel agordi tion per la aranĝo?
+                    EN.kunigu(0);
+                    EN.kunigu(1);
+                    EN.kunigu(2);
+                    EN.kunigu(3);
+                    this.metu(EN,p[1],p[2]);    
+                    break;
+                
+                case "EL":
+                    const EL = new LElirPlato("EL");
+                    this.metu(EL,p[1],p[2]);    
+                    break;
+            
+                default:
+                    const plato = kreu_platon(p[0]);
+                    this.metu(plato,p[1],p[2]);                       
+                } // switch
+            } // for
+        } // if
+    }
 
 
     /**
@@ -684,6 +813,33 @@ class LPanelo extends LSVG {
                     p.k == _k && p.v <= v && p.v + p.plato.alto > v);
                 if (njb) return njb
             }
+        }
+    }    
+
+    /**
+     * Trovu liberan lkon por plato
+     * @param {LSVGPlato} plato 
+     * @returns [kolumno,vico]
+     */
+    trovu_lokon(plato) {
+        for (let v = 0; v<this.vicoj; v++) {
+            for (let k = 0; k<this.kolumnoj; k++) {
+                if (this.kovro.libera(plato.larĝo,plato.alto,k,v))
+                    return [k,v];
+            }
+        }
+    }
+
+    /**
+     * Metu platon en liberan lokon
+     * @param {LSVGPlato} plato 
+     */
+    metu_ien(plato) {
+        const loko = this.trovu_lokon(plato);
+        if (loko) {
+            this.metu(plato,...loko);
+        } else {
+            throw("Ne troviĝas konvena loko sur la panelo por "+plato.id);
         }
     }    
 
@@ -999,7 +1155,7 @@ class LPordPlato extends LSVGPlato {
             // la turnopunkto troviĝas en la fino de la d-pado
             const d = pt.getAttribute("d").split("L");
             const [x,y] = d[d.length-1].split(" ");
-            //Lk.a(klapo, {d: `M${xw-fend} ${y+9}L${xw} ${y+25}`});
+            //LSVG.a(klapo, {d: `M${xw-fend} ${y+9}L${xw} ${y+25}`});
             if (aktiva) {
                 LSVG.a(pt,{transform: `rotate(15 ${x} ${y})`});
                 //pt.fermita = !pt.fermita0;
