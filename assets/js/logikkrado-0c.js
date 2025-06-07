@@ -492,7 +492,7 @@ class LSVG {
 
 class LSVGPlato extends LPlato {
 
-    constructor(id,eniroj,eliroj,larĝo,alto,forigebla=true) {
+    constructor(id,eniroj,eliroj,larĝo,alto,forigo) {
         super(id,eniroj,eliroj);
 
         // formato en unuoj
@@ -517,7 +517,7 @@ class LSVGPlato extends LPlato {
         });
         this.g.append(r);    
 
-        if (forigebla) {
+        if (forigo) {
             const x = LSVG.e("text",{
                 class: "for",
                 x: lrĝ-9,
@@ -527,10 +527,7 @@ class LSVGPlato extends LPlato {
             this.g.append(x);    
 
             x.addEventListener("click",() => {
-                const self = this;
-                if (this.panelo) {            
-                    this.panelo.forigu(self);
-                }
+                forigo(this);
             });
         }
 
@@ -652,7 +649,7 @@ class LPanelo extends LSVG {
         this.vicoj = Math.ceil((vb[3]-20)/50); // -20 pro la supra menuo ni redukto la uzeblan altecon
 
         // la listo de la platoj
-        this.platoj = {};
+        this.platoj = {}; // { <plato.id>: { plato, k, v } }
         // ni devas prizorgi la okupitajn kau liberajn lokojn
         this.kovro = new LKovro(this.vicoj,this.kolumnoj);
 
@@ -724,19 +721,24 @@ class LPanelo extends LSVG {
      * @param {*} aranĝo 
      */
     kreu(aranĝo) {
+        const self = this;
+
+        function forigo(plato) { 
+            self.forigu(plato); 
+        }
 
         function kreu_platon(id) {
             const [Pk,...args] = {
                 "IDx":  [LIDPlato,0],
                 "IDy":  [LIDPlato,1],
-                "NE":   [LPordPlato,NE],
-                "KAJ":  [LPordPlato,KAJ],
-                "NKAJ": [LPordPlato,NKAJ],
-                "AŬ":   [LPordPlato,AŬ],
-                "XAŬ":  [LPordPlato,XAŬ],
-                "NEK":  [LPordPlato,NEK],
-                "EKV":  [LPordPlato,EKV],
-                "KAJXAŬ": [LPordPlato,KAJXAŬ,'=1/&']
+                "NE":   [LPordPlato,NE,forigo],
+                "KAJ":  [LPordPlato,KAJ,forigo],
+                "NKAJ": [LPordPlato,NKAJ,forigo],
+                "AŬ":   [LPordPlato,AŬ,forigo],
+                "XAŬ":  [LPordPlato,XAŬ,forigo],
+                "NEK":  [LPordPlato,NEK,forigo],
+                "EKV":  [LPordPlato,EKV,forigo],
+                "KAJXAŬ": [LPordPlato,KAJXAŬ,forigo,'=1/&']
             }[id];
             return new Pk(id,...args);        
         }
@@ -894,42 +896,35 @@ class LPanelo extends LSVG {
     forigu(plato) {
         //let imin, jmin;
         const pi = this.platoj[plato.id];
-        const k = pi[1];
-        const v = pi[2];
+        const dk = plato.larĝo; 
+        const dv = plato.alto; 
 
-        const formato = plato.formato();
-        const dk = formato[0]/50; // larĝo
-        const dv = formato[1]/50; // alto
+        for (let _v = pi.v; _v < pi.v+dv; _v++) {
 
-        for (let _v = v; _v<v+dv; _v++) {
-            // forigu kunigojn maldekstrajn en la linio _v
-            if (k>0) {
-                const najbaro = this.metoj[_v][k-1];
-                if (najbaro) {
-                    const np = najbaro[0];
-                    const ni = najbaro[1];
-                    Plato.malligu(np,ni,plato,_v-v);
-                };
-            }
-            // kaj dekstre
-            if (k+dk<this.vert) {
-                const najbaro = this.metoj[_v][k+dk];
-                if (najbaro) {
-                    const np = najbaro[0];
-                    const ni = najbaro[1];
-                    Plato.malligu(plato,_v-v,np,ni);
-                }
-            }
+            const njb1 = this.najbaro_maldekstra(pi.k-1,pi.v);
+            if (njb1) {
+                const njb_el = _v-njb1.v;
+                const p_el = plato.eliroj[_v-pi.v];
+                // ligu eliron de la maldekstra najbaro al nia evtl. dekstra najbaro
+                njb1.plato.ligu(njb_el,...p_el);
+                // aktualigu staton
+                if (p_el) p_el[0].ŝaltu(p_el[1],njb1.plato.el(njb_el));
+            } else if (p_el) {
+                // forigu ligojn dekstrajn en la linio _v
+                // ne necesas, ĉar ni forigas la platon: plato.malligu(_v-pi.v);
 
-            // liberu la kampon en la panelo
-            for (let _k = k; _k<k+dk; _k++) {
-                this.metoj[_v][_k] = undefined;
+                // ni ne havas maldekstran najbaron, sed dekstran kiun eble
+                // ni devas aktualigi
+                p_el[0].ŝaltu(p_el[1],false);
             }
         }
 
+        // liberigu la kampon en la panelo
+        this.kovro.malokupu(dk,dv,pi.k,pi.v);
+        delete this.platoj[plato.id];
+
         // forigu la pecon el svg
         plato.g.remove();
-        delete this.platoj[plato.id];
     }    
 
 }
@@ -937,12 +932,12 @@ class LPanelo extends LSVG {
 
 // plato kun logikpordo
 class LPordPlato extends LSVGPlato {
-    constructor(id,aranĝo,nomo=id) {
+    constructor(id,aranĝo,forigo,nomo=id) {
         const pordo = new LPordo(aranĝo);
         const ŝlt = pordo.ŝlt();
         const rel1 = pordo.rk(1) != 0;
         const unuoj = 1+rel1
-        super(id,unuoj,unuoj,2,unuoj);
+        super(id,unuoj,unuoj,2,unuoj,forigo);
         this.pordo = pordo;
         this.relajsoj = [];
 
