@@ -136,7 +136,7 @@ class LPordo {
         // ni skribu la aktualajn enirostatojn
         // ni uzas -aktiva, ĉar ĉe -1 ĉiuj bitoj estas 1, do ankaŭ la maskita bito
         // dum ĉe -0 senŝanĝe ĉiuj bitoj restas 0
-        const bm = eniro? BM_EN1 : BM_EN1;
+        const bm = eniro? BM_EN0 : BM_EN1;
         // purigu la eniro-biton
         this.aranĝo &= ~bm;
         // metu la novan valoron
@@ -159,7 +159,7 @@ class LPordo {
      * aktuala stato de eniroj;
      * se ni havas nur unu relajson, ni ignoras la dua eniron
      */
-    el() {
+    el(nro) {
         // ni legu la aktualajn enirostatojn
         // poste ni uzas -e0, -e1, ĉar ĉe -1 ĉiuj bitoj estas 1, do ankaŭ la maskita bito
         // dum ĉe -0 senŝanĝe ĉiuj bitoj restas 0
@@ -167,41 +167,39 @@ class LPordo {
         const e1 = ((this.aranĝo & BM_EN1) >> 7);
 
         // ĉiuokaze ni bezonas la konektojn de la eliroj
-        const el0 = (this.aranĝo & BM_EL0) >> 16;
-        const el1 = (this.aranĝo & BM_EL1) >> 20;
+        const el = nro? (this.aranĝo & BM_EL1) >> 20 : (this.aranĝo & BM_EL0) >> 16;
 
-        // variabloj por elirostatoj
-        let s0, s1;
+        // variablo por elirostatoj
+        let s_el;
 
-        // se ni havas unuan relajson ni kalkulas ĝian staton
+        // se ni havas unuan relajson (normale ni havas almenaŭ tiun) ni kalkulas ĝian staton
         // depende de unua eniro, ni supozas ke ĉiuj kvar bitoj
         // estas 0, se ĝi ne ekzistas (alikaze oni devus aldoni >> 3 por havi nur
         // la ekzistobiton sole)
-        const re0 = this.aranĝo & BM_RE0;
-        if (re0) {
+        const rk0 = this.aranĝo & BM_RK0;
+        if (rk0) {
             // relajsostato depende de e0
-            const rs0 = -e0 ^ re0;
-            // elirostatoj el stato de relajso 0
-            s0 = rs0 & el0;
-            s1 = rs0 & el1;    
+            const re0 = this.aranĝo & BM_RE0;
+            const rs0 = -e0 ^ (re0 & rk0);
+            // elirostato el stato de relajso 0
+            s_el = rs0 & el;    
         }
 
-        // se ekzistas dua relajso ni
-        // alkalkulu ĝin
-        const re1 = (this.aranĝo & BM_RE1) >> 4;
-        if (re1) {
+        // se ekzistas dua relajso ni alkalkulu ĝin
+        const rk1 = (this.aranĝo & BM_RK1) >> 4;
+        if (rk1) {
             // relajsostato depende de e1
-            const rs1 = -e1 ^ re1;
-            // elirostatoj el stato de relajso 0
-            s0 &= rs1 & el0;
-            s1 &= rs1 & el1;    
+            const re1 = (this.aranĝo & BM_RE1) >> 4;
+            const rs1 = -e1 ^ (re1&rk1);
+            // kombinita elirostato el relajso 0 kaj 1
+            s_el &= rs1 & el;    
         }
 
         // s0 kaj s1 povas havi iujn valorojn inter 0 = eliro senelektra aŭ
         // 1..7 unu ĝis tri dratoj kondukas elektron
         // se ni interesiĝas nur ĉu eliras elektro ni povus ankoraŭ transformi tion al bulea valoro
         // aŭ testi !== 0
-        return [s0,s1]
+        return s_el;
     }
 
     /**
@@ -918,7 +916,7 @@ class LPordPlato extends LSVGPlato {
 
     eliro(n=3, x=90, yd=95) { //,e="") {
         const y1 = n==1? 20:70;
-        const y2 = n==3? 70:undefined;
+        const y2 = n==3? 20:undefined;
 
         //this.kontakto(98,y1.e);
         let d = `M100 ${y1}L${x} ${y1}`;
@@ -954,10 +952,12 @@ class LPordPlato extends LSVGPlato {
         });
 
         // ŝanĝu enirostatojn de najbaraj platoj laŭ propra elirostatoj
-        for (let njb of this.eliroj) {
+        for (let nro of [0,1]) {
             // ŝaltu ligitajn platojn
+            const njb = this.eliroj[nro];
             if (njb) {
-                njb[0].ŝaltu(njb[1]);
+                const s_el = this.pordo.el(nro);
+                njb[0].ŝaltu(njb[1],s_el);
             }
         }
     }

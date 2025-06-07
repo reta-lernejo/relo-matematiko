@@ -43,10 +43,10 @@ lanĉe(() => {
   en.kunigu(2);
   en.kunigu(3);
   panelo.metu(en,0,0);
-
+/*
   const ne = new LPordPlato("NE",NE); // | for_mov<<16);
   panelo.metu(ne,3,0);    
-
+*/
   const kaj = new LPordPlato("KAJ",KAJ); // | for_mov<<16);
   panelo.metu(kaj,3,1);    
 /*
@@ -74,7 +74,6 @@ lanĉe(() => {
   const da = new LPordPlato("KAJXAŬ",KAJXAŬ,"&/=1"); // | for_mov<<16);
   panelo.metu(da,1,4);    
 */
-
   const el = new LElirPlato("EL");
   panelo.metu(el,7,0);    
 
