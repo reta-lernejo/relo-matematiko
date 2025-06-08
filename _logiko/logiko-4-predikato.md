@@ -1,6 +1,7 @@
 ---
 layout: laborfolio
-title: 3 - Predikata kalkulsistemo
+title: 4 - Predikata kalkulsistemo
+next_ch: logiko-5-dedukto
 js-ext: mathjax3
 ---
 

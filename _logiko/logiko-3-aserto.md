@@ -1,6 +1,7 @@
 ---
 layout: laborfolio
-title: 2 - Aserta kalkulsistemo
+title: 3 - Aserta kalkulsistemo
+next_ch: logiko-4-predikato
 js-ext: mathjax3
 ---
 

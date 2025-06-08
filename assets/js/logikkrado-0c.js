@@ -554,9 +554,11 @@ class LSVGPlato extends LPlato {
             });
         }
 
-        r.addEventListener("click",() => {
-            marko(this);
-        })
+        if (marko) {
+            r.addEventListener("click",() => {
+                marko(this);
+            });    
+        }
     }
 
     nomo(nom) {
@@ -776,20 +778,20 @@ class LPanelo extends LSVG {
             self.marku(plato);
         }
 
-        function kreu_platon(id) {
+        function kreu_platon(nomo) {
             const [Pk,...args] = {
-                "ID0":  [LIDPlato,0,forigo,marko],
-                "ID1":  [LIDPlato,1,forigo,marko],
-                "NE":   [LPordPlato,NE,forigo,marko],
-                "KAJ":  [LPordPlato,KAJ,forigo,marko],
-                "NKAJ": [LPordPlato,NKAJ,forigo,marko],
-                "AŬ":   [LPordPlato,AŬ,forigo,marko],
-                "XAŬ":  [LPordPlato,XAŬ,forigo,marko],
-                "NEK":  [LPordPlato,NEK,forigo,marko],
-                "EKV":  [LPordPlato,EKV,forigo,marko],
-                "KAJXAŬ": [LPordPlato,KAJXAŬ,forigo,marko,'=1/&']
-            }[id];
-            return new Pk(id,...args);        
+                "ID0":  [LIDPlato,0],
+                "ID1":  [LIDPlato,1],
+                "NE":   [LPordPlato,NE],
+                "KAJ":  [LPordPlato,KAJ],
+                "NKAJ": [LPordPlato,NKAJ],
+                "AŬ":   [LPordPlato,AŬ],
+                "XAŬ":  [LPordPlato,XAŬ],
+                "NEK":  [LPordPlato,NEK],
+                "EKV":  [LPordPlato,EKV],
+                "KAJXAŬ": [LPordPlato,KAJXAŬ]
+            }[nomo];
+            return new Pk(undefined,...args,forigo,marko,nomo=="KAJXAŬ"?'=1/&':nomo);        
         }
 
         // kreu menuon por la diversaj logikplatoj

@@ -1,6 +1,6 @@
 ---
 layout: laborfolio
-title: 4 - Deduktsistemoj
+title: 5 - Deduktsistemoj
 js-ext: mathjax3
 ---
 
