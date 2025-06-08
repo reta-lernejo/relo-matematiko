@@ -336,6 +336,33 @@ class LKovro {
         return lb;
     }
 
+   /**
+     * Rigardu, ĉu estas libera spaco por plato dk x dv
+     * ĉe koordinatoj vico, kolumno. La malnovaj koordinatoj
+     * de la plato estas ankaŭ donitaj. Do se la nova loko 
+     * parte kovras la novan, tio estas konsiderata
+     * @param {*} dk 
+     * @param {*} dv 
+     * @param {*} vico 
+     * @param {*} kolumno 
+     * @returns 
+     */
+    libera_nov(dk,dv,kol_nov,vic_nov,kol_malnov,vic_malnov) {
+        const bm_nov = LKovro.bitmask(kol_nov,dk);
+        const bm_malnov = LKovro.bitmask(kol_malnov,dk);
+
+        let lb = true;
+        for (let v=vic_nov; v < vic_nov+dv; v++) {
+            let okup = this.okupo[v];
+            if (v >= vic_malnov && vic_malnov < v+dv) {
+                okup &= ~bm_malnov;
+            }
+            lb &&= ((okup & bm_nov) == 0)
+        }
+
+        return lb;
+    }    
+
     /**
      * Okupu lokon dk x dv ĉe vico, kolumno
      * @param {*} dk 
@@ -705,12 +732,22 @@ class LPanelo extends LSVG {
                    
                 // se la loko estas libera ni povas movi la markitan 
                 // platon tien
-                if (this.kovro.libera(dk,dv,kolumno,vico)) {
+                const pi = this.platoj[plato.id];        
+                if (this.kovro.libera_nov(dk,dv,kolumno,vico,pi.k,pi.v)) {
                     // malokupu nunan lokon kaj okupu la novan
                     //this.kovro.malokupu(dk,dv,undefined,undefined);
                     //this.kovro.okupu(dk,dv,kolumno,vico);
+
+                    // sencimigo
+                    console.log("ANTAŬ MOVO:")
+                    this.skribu_ligojn();
+
                     this.forigu(plato);
                     this.metu(plato,kolumno,vico);
+
+                    // sencimigo
+                    console.log("POST MOVO:")
+                    this.skribu_ligojn();
                 }
             }
         });
@@ -913,7 +950,7 @@ class LPanelo extends LSVG {
 
         for (let _v = pi.v; _v < pi.v+dv; _v++) {
 
-            const njb1 = this.najbaro_maldekstra(pi.k-1,pi.v);
+            const njb1 = this.najbaro_maldekstra(pi.k-1,_v);
             if (njb1) {
                 const njb_el = _v-njb1.v;
                 const p_el = plato.eliroj[_v-pi.v];
@@ -967,7 +1004,20 @@ class LPanelo extends LSVG {
                 else p.plato.marku(false);
             });  
         }
-    }    
+    }
+
+    skribu_ligojn() {
+        for (const p of Object.values(this.platoj)) {
+            if (p.plato.eliroj) {
+                console.log(`${p.plato.id}: `);
+                for (const el of p.plato.eliroj) {
+                    const p_el = this.platoj[el[0].id]
+                    const erara = !p_el || p.k > p_el.k? "ERARA" : "";
+                    console.log(`  -> ${el[0].id} ${el[1]} ${erara}`);
+                }
+            }
+        }
+    }
 
 }
 
