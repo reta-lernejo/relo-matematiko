@@ -1,0 +1,136 @@
+rect.panelo {
+    stroke: none;
+    fill: silver;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.krado rect {
+    stroke-width: 0.5;
+    stroke: gray;
+    fill: none;
+    stroke-dasharray: 3,3;
+}
+
+.menuo rect {
+    fill: rgb(101, 186, 197);
+    stroke-width: 0.5;
+    stroke: gray;
+}
+
+.menuero rect {
+    fill: rgb(255, 222, 160);
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.menuero text {
+    font-size: 8pt;
+    text-anchor: middle;
+    dominant-baseline: middle;
+    /* plusendu klakojn al la rektangulo de la butono */
+    pointer-events: none;
+    cursor: pointer;
+}
+
+.plato rect {
+    stroke: black;
+    fill: none;
+}
+
+.plato path {
+    stroke: black;
+    stroke-linecap: round;
+    fill: none;
+}
+
+.plato line {
+    stroke: black;
+    stroke-linecap: round;
+    fill: none;
+}
+
+.plato circle {
+    stroke: black;
+    fill: none;
+}
+
+.plato text.for {
+    pointer-events: all;
+    cursor: pointer;
+    font-size: 4pt;
+}
+
+.plato line.maso {
+    stroke: black;
+    stroke-linecap: butt;
+    stroke-width: 2;
+}
+
+rect.fono {
+    fill: rgb(181, 232, 255);
+    stroke-width: 0.5;
+    stroke: gray;
+    pointer-events: all;
+    cursor: pointer;
+}
+
+.plato .markita {
+    stroke-width: 1.5;
+    stroke: darkred;
+    stroke-dasharray: 5,2;
+}
+
+
+.eniroj circle {
+    pointer-events: all;
+    cursor: pointer;    
+}
+
+.eniroj text {
+    font-size: 9pt;
+    pointer-events: none;
+    cursor: pointer;    
+}
+
+.eniroj .dr_1 {
+    stroke: #800;
+}
+
+.eniroj .dr_2 {
+    stroke: rgb(133, 63, 1);
+}
+
+
+path.kerno {
+    fill: none;
+    stroke: black;
+    stroke-dasharray: 5,2;
+}
+
+.relajso text {
+    font-size: 10pt;
+}
+
+.kontakto.aktiva {
+    fill: red;
+}
+
+.lumo circle {
+    cursor: pointer;
+    fill: #882222;
+}
+
+
+.lumo.aktiva circle {
+    fill: #ff2222;
+    /* difinenda en SVG <defs>! */
+    fill: url(#helrugho);
+}
+
+.lumo text {
+    font-size: 5pt;
+    text-anchor: middle;
+    dominant-baseline: middle;
+}    
+
