@@ -116,16 +116,19 @@ path.kerno {
     fill: red;
 }
 
-.lumo circle {
+.lumo circle, .lumo rect {
     cursor: pointer;
     fill: #882222;
+    stroke-width: .5;
+    stroke: #333;
 }
 
-
-.lumo.aktiva circle {
+.lumo.aktiva circle, .lumo.aktiva rect {
     fill: #ff2222;
     /* difinenda en SVG <defs>! */
     fill: url(#helrugho);
+    stroke: #111;
+    stroke-width: .8;
 }
 
 .lumo text {

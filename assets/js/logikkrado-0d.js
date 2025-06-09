@@ -1325,19 +1325,28 @@ class LEnirPlato extends LSVGPlato {
 
         // krei enirojn 
         for (let v=0; v<6; v++) {
+            const vic = v%mod;
+            const nro = Math.ceil((6-v)/mod);
+
             const x = (1+v)*LSVG.unuo(7);
-            const y0 = (1/5+(6*mod-v-1)%mod)*UNUO;
+            const y0 = (1/5+(mod-vic-1))*UNUO;
             const y = (5.4-v)*UNUO;
 
-            const nro = mod-1-Math.floor(v/mod);
-            const lumo = this.lumo(x,y0-2,nro);
+            //const lumo = this.lumo(x,y0-2,nro);
+            const lumo = new LButono(v,"lumo butono",nro,x-5,y0-8,10,9.5);            
             this.lumoj[5-v] = [lumo,false];
             //dratoj.kontakto(48,y);
-            const d = LSVG.e("path",{ class: `drato dr_${(6*mod-v-1)%mod+1}`, d: `M${x} ${y0+2}L${x} ${y}L${UNUO} ${y}` });
-            this.g.append(d);
+            const d = LSVG.e("path",{ class: `drato dr_${vic+1}`, d: `M${x} ${y0+2}L${x} ${y}L${UNUO} ${y}` });
+            this.g.append(lumo.g,d);
 
+            /*
             lumo.addEventListener("click",() => {
                 this.ŝaltu(5-v, true);
+            });
+            */
+            const self = this;
+            lumo.reago((btn) => {
+                self.ŝaltu(5-btn.id, true);
             });
 
             // por trakti kunigojn ni devas scii 
@@ -1393,7 +1402,7 @@ class LEnirPlato extends LSVGPlato {
         // ŝanĝu staton de la lumo
         //this.lumoj[eliro][1] = aktiva;
         lumo[1] = aktiva;
-        lumo[0].classList.toggle("aktiva",aktiva);
+        lumo[0].g.classList.toggle("aktiva",aktiva);
 
         // ŝaltu ligitajn platojn
         const njb = this.eliroj[eliro];
