@@ -777,15 +777,24 @@ class LPanelo extends LSVG {
 
         function menuero_reago(ero) {
             const plato = kreu_platon(ero);
-            self.metu_ien(plato);
+
+            if (ero == "xy" || ero == "xyz" || ero == "abcdef") {
+                const EN = Object.values(self.platoj).find((v) => {
+                    return (v.plato instanceof LEnirPlato)
+                });
+                if (EN) self.forigu(EN.plato);
+                self.metu(plato,0,0);
+            } else {
+                self.metu_ien(plato);
+            }
         }
 
         function kreu_platon(nomo) {
             const [Pk,...args] = {
                 "EN": [LEnirPlato,2],
-                "EN2": [LEnirPlato,2],
-                "EN3": [LEnirPlato,3],
-                "EN6": [LEnirPlato,6],
+                "xy": [LEnirPlato,2],
+                "xyz": [LEnirPlato,3],
+                "abcdef": [LEnirPlato,6],
                 "EL": [LElirPlato],
                 "ID0":  [LIDPlato,0],
                 "ID1":  [LIDPlato,1],
@@ -939,10 +948,11 @@ class LPanelo extends LSVG {
 
         for (let _v = pi.v; _v < pi.v+dv; _v++) {
 
+            const p_el = plato.eliroj[_v-pi.v];
             const njb1 = this.najbaro_maldekstra(pi.k-1,_v);
+
             if (njb1) {
                 const njb_el = _v-njb1.v;
-                const p_el = plato.eliroj[_v-pi.v];
                 // ligu eliron de la maldekstra najbaro al nia evtl. dekstra najbaro
                 njb1.plato.ligu(njb_el,...p_el);
                 // aktualigu staton
