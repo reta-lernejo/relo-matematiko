@@ -3,10 +3,10 @@ layout: laborfolio
 title: 2 - Bulea Algebro
 next_ch: logiko-3-aserto
 css:
-  - logikkrado-0c
+  - logikkrado-0d
 js:
   - folio-0c
-  - logikkrado-0c
+  - logikkrado-0d
 js-ext: mathjax3
 ---
 
@@ -32,7 +32,7 @@ k.a.
 
 lanĉe(() => {
     const aranĝo = {
-      menuo: ["NE","KAJ","AŬ"],
+      menuo: ["xy","xyz","NE","KAJ","AŬ","XAŬ"],
       platoj: [
         ["EN",  0,0],
         ["EL",  7,0],
@@ -88,8 +88,8 @@ $$\{\lor;\lnot\}$$ estas kompletaj.
 
 ## Simetria diferenco
 
-La funkcion $$\oplus$$ laŭ $$x \oplus y = (x \land \overline{y}) \lor (\overline{x} \land y)$$ 
-oni nomas *simetria diferenco*, aŭ ankaŭ *duuma adicio*. La funkcisistemo $$\{\oplus;\land\}$$ estas kompleta. 
+La funkcion $$\oplus$$ (`XAŬ`) laŭ $$x \oplus y = (x \land \overline{y}) \lor (\overline{x} \land y)$$ 
+oni nomas ankaŭ *simetria diferenco*, aŭ *duuma adicio*. La funkcisistemo $$\{\oplus;\land\}$$ estas kompleta. 
 Oni per ĝi povas konstrui algebron, kie validas tiuj leĝoj:
 
 $$x \oplus y = y \oplus x$$
