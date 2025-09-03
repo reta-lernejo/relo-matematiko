@@ -1317,8 +1317,8 @@ class LEnirPlato extends LSVGPlato {
         // x, y, z resp. a,b,c,d,e,f
         const c = mod<=3? 120 : 97;
         for (t = 0; t<mod; t++) {
-            const x = t? LSVG.unuo(40) : LSVG.unuo(2);
-            const y = LSVG.unuo(12+50*t);
+            const x = LSVG.unuo(2); //t? LSVG.unuo(40) : LSVG.unuo(2);
+            const y = LSVG.unuo((t?-2:10)+50*t);
             const tx = LSVG.e("text",{ x, y },String.fromCharCode(c+t));
             this.g.append(tx);    
         }
