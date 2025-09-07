@@ -27,7 +27,7 @@ https://www.gaussianwaves.com/2015/11/interpreting-fft-results-obtaining-magnitu
 </div>
 <div class="settingsBar">
   <div class="left">
-    <span>Volume: </span>
+    <span>Amplitudo: </span>
     <input
       type="range"
       min="0.0"
@@ -42,21 +42,25 @@ https://www.gaussianwaves.com/2015/11/interpreting-fft-results-obtaining-magnitu
     </datalist>
   </div>
   <div class="right">
-    <span>Current waveform: </span>
+    <span>Ondospeco: </span>
     <select name="waveform">
-      <option value="sine">Sine</option>
+      <option value="custom">Propra</option>
+      <option value="sine">Sinuso</option>
+      <!--
       <option value="square" selected>Square</option>
       <option value="sawtooth">Sawtooth</option>
       <option value="triangle">Triangle</option>
-      <option value="custom">Custom</option>
+      -->
     </select>
   </div>
 </div>
 
 <style>
 .container {
+  /*
   overflow-x: scroll;
   overflow-y: hidden;
+  */
   width: 660px;
   height: 110px;
   white-space: nowrap;
@@ -176,7 +180,29 @@ let customWaveform = null;
 let sineTerms = null;
 let cosineTerms = null;
 
+function notoj(okt=4) {
+  // https://en.wikipedia.org/wiki/Pitch_(music)
+  const fq4 = {
+    c: 261.63,
+    "c#": 277.18,
+    d: 293.67,
+    "d#": 311.125,
+    e: 329.625,
+    f: 349.23,
+    "f#": 370,
+    g: 392,
+    "g#": 415.3,
+    a: 440,
+    "a#": 466.16,
+    h: 493.875
+  }
+  return Object.entries(fq4).map(([noto,frekv]) => [
+    noto,
+    frekv * Math.pow(2,okt-4)
+  ])
+}
 
+/*
 function createNoteTable() {
   const noteFreq = [
     { A: 27.5, "A#": 29.13523509488062, B: 30.867706328507754 },
@@ -208,8 +234,10 @@ function createNoteTable() {
   noteFreq.push({ C: 4186.009044809578 });
   return noteFreq;
 }
+*/
+
 function setup() {
-  const noteFreq = createNoteTable();
+  //const noteFreq = createNoteTable();
 
   volumeControl.addEventListener("change", changeVolume, false);
 
@@ -221,6 +249,17 @@ function setup() {
   // our purposes we don't need them. Each octave is inserted
   // into a <div> of class "octave".
 
+  // 4-a oktavo
+  notoj(4).forEach(([noto,frekv]) => {
+    if (noto.length === 1) {
+      keyboard.appendChild(createKey(noto, 4, frekv));
+    }
+  });
+
+  const c5 = notoj(5)[0];
+  keyboard.appendChild(createKey(c5[0], 5, c5[1]));
+
+/*
   noteFreq.forEach((keys, idx) => {
     const keyList = Object.entries(keys);
     const octaveElem = document.createElement("div");
@@ -238,6 +277,7 @@ function setup() {
   document
     .querySelector("div[data-note='B'][data-octave='5']")
     .scrollIntoView(false);
+*/
 
   //sineTerms = new Float32Array([0, 0, 1, 0, 1]);
   //sineTerms = new Float32Array([0, 1, 0, 0.5, 0, 0.25]);
