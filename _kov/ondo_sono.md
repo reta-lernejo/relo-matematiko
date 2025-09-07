@@ -55,6 +55,10 @@ https://www.gaussianwaves.com/2015/11/interpreting-fft-results-obtaining-magnitu
   </div>
 </div>
 
+<canvas width="320" height="240" id="osciloskopo"></canvas>
+<canvas width="320" height="240" id="frekvencoj"></canvas>
+
+
 <style>
 .container {
   /*
@@ -180,6 +184,13 @@ let customWaveform = null;
 let sineTerms = null;
 let cosineTerms = null;
 
+let analyser = null;
+let dataArray = [];
+let bufferLength = null;
+
+const canvas = [document.getElementById("osciloskopo"),document.getElementById("frekvencoj")];
+const canvasCtx = canvas.map((c) => c.getContext("2d"));
+
 function notoj(okt=4) {
   // https://en.wikipedia.org/wiki/Pitch_(music)
   const fq4 = {
@@ -242,7 +253,19 @@ function setup() {
   volumeControl.addEventListener("change", changeVolume, false);
 
   mainGainNode = audioContext.createGain();
-  mainGainNode.connect(audioContext.destination);
+
+  analyser = audioContext.createAnalyser();
+  analyser.fftSize = 2048;
+
+  bufferLength = analyser.frequencyBinCount;
+  dataArray = [new Uint8Array(bufferLength),new Uint8Array(bufferLength)];
+  analyser.getByteTimeDomainData(dataArray[0]);
+  analyser.getByteFrequencyData(dataArray[1]);
+
+  //mainGainNode.connect(audioContext.destination);
+  mainGainNode.connect(analyser);
+  analyser.connect(audioContext.destination);
+
   mainGainNode.gain.value = volumeControl.value;
 
   // Create the keys; skip any that are sharp or flat; for
@@ -281,17 +304,71 @@ function setup() {
 
   //sineTerms = new Float32Array([0, 0, 1, 0, 1]);
   //sineTerms = new Float32Array([0, 1, 0, 0.5, 0, 0.25]);
-  //sineTerms = new Float32Array([0, 1,0.5, 0.3, 0.1]);
-  sineTerms = new Float32Array([0, 1, 0, 0.5, 0, 0.2, 0, 0.1]);
-  cosineTerms = new Float32Array(sineTerms.length);
+  //sineTerms = new Float32Array([0, 1,0.5, 0.3, 0.1]);  
+  // sineTerms = new Float32Array([0, 1, 0, 0.5, 0, 0.2, 0, 0.1]);
+
+
+  sineTerms = new Float32Array([0, 1.0, 0, 0.4, 0, 0.1, 0, 0.05]);
+  cosineTerms = new Float32Array(sineTerms.length); // ĉio 0 - neniu fazo
+  //cosineTerms = sineTerms; //
+
   customWaveform = audioContext.createPeriodicWave(cosineTerms, sineTerms);
 
   for (let i = 0; i < 9; i++) {
     oscList[i] = {};
   }
+
 }
 
 setup();
+
+// draw an oscilloscope of the current audio source
+
+function draw(c) {
+  // mendu la sekvan desegnon de la diagramo
+  requestAnimationFrame(() => draw(c));
+
+  if (c == 0) {
+    analyser.getByteTimeDomainData(dataArray[c]);
+  } else {
+    analyser.getByteFrequencyData(dataArray[c]);
+  }
+
+  const cnv = canvas[c];
+  const ctx = canvasCtx[c];
+
+  ctx.fillStyle = "rgb(200 200 200)";
+  ctx.fillRect(0, 0, cnv.width, cnv.height);
+
+  ctx.lineWidth = 2;
+  ctx.strokeStyle = "rgb(0 0 0)";
+
+  ctx.beginPath();
+
+  const sliceWidth = (cnv.width * 1.0) / bufferLength;
+  let x = 0;
+
+  for (let i = 0; i < bufferLength; i++) {
+    const v = dataArray[c][i] / 128.0;
+    const y = (v * cnv.height) / 2;
+
+    if (i === 0) {
+      ctx.moveTo(x, y);
+    } else {
+      ctx.lineTo(x, y);
+    }
+
+    x += sliceWidth;
+  }
+
+  ctx.lineTo(cnv.width, cnv.height / 2);
+  ctx.stroke();
+}
+
+draw(0);
+draw(1);
+
+
 function createKey(note, octave, freq) {
   const keyElement = document.createElement("div");
   const labelElement = document.createElement("div");
