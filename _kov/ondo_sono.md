@@ -55,8 +55,8 @@ https://www.gaussianwaves.com/2015/11/interpreting-fft-results-obtaining-magnitu
   </div>
 </div>
 
-<canvas width="320" height="240" id="osciloskopo"></canvas>
-<canvas width="320" height="240" id="frekvencoj"></canvas>
+<canvas width="512" height="300" id="osciloskopo"></canvas>
+<canvas width="512" height="300" id="frekvencoj"></canvas>
 
 
 <style>
@@ -255,7 +255,7 @@ function setup() {
   mainGainNode = audioContext.createGain();
 
   analyser = audioContext.createAnalyser();
-  analyser.fftSize = 2048;
+  analyser.fftSize = 512;
 
   bufferLength = analyser.frequencyBinCount;
   dataArray = [new Uint8Array(bufferLength),new Uint8Array(bufferLength)];
@@ -325,11 +325,23 @@ setup();
 // draw an oscilloscope of the current audio source
 
 function draw(c) {
+  function nulejo(data,nul=128) {
+    for (let i = 0; i < bufferLength-1; i++) {
+      if (data[i]<nul && data[i+1] >= nul)
+        return i;
+    }
+    return 0;
+  }
+
   // mendu la sekvan desegnon de la diagramo
   requestAnimationFrame(() => draw(c));
+  let offset = 0;
 
   if (c == 0) {
     analyser.getByteTimeDomainData(dataArray[c]);
+    offset = nulejo(dataArray[c]);
+    console.log("offset: "+offset);
+    //if (!offset) console.log(dataArray[c]);
   } else {
     analyser.getByteFrequencyData(dataArray[c]);
   }
@@ -348,11 +360,12 @@ function draw(c) {
   const sliceWidth = (cnv.width * 1.0) / bufferLength;
   let x = 0;
 
-  for (let i = 0; i < bufferLength; i++) {
-    const v = dataArray[c][i] / 128.0;
+  //for (let i = offset; i < bufferLength+offset; i++) {
+  for (let i = offset; i < bufferLength; i++) {
+    const v = dataArray[c][i%bufferLength] / 128.0;
     const y = (v * cnv.height) / 2;
 
-    if (i === 0) {
+    if (i === offset) {
       ctx.moveTo(x, y);
     } else {
       ctx.lineTo(x, y);
@@ -361,7 +374,7 @@ function draw(c) {
     x += sliceWidth;
   }
 
-  ctx.lineTo(cnv.width, cnv.height / 2);
+  //ctx.lineTo(cnv.width, cnv.height / 2);
   ctx.stroke();
 }
 
