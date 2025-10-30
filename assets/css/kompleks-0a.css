@@ -5,8 +5,13 @@ text.punkto {stroke:navy; font-weight: normal; font-size: 14}
 
 .kadro {stroke: black; stroke-width: 1; fill: none}
 
+g.komplekso {
+    pointer-events: all;
+}
+
+
 circle {stroke-width: 1; stroke: black; fill: none; }
-circle.komplekso {stroke: none; fill: cornflowerblue; }
+circle.rondo {stroke: none; fill: cornflowerblue; }
 circle.punkto {fill: black; }
 
 path {fill:none; stroke-width:2}
