@@ -2,7 +2,7 @@
 layout: laborfolio
 title: Cikloido
 js:
-    - folio-0a
+    - folio-0c
 js-ext: mathjax3
 css: 
     - kurbo-0a

@@ -147,8 +147,8 @@
     Elementoj de konstruo
   -->
 
-  <circle id="konstrucirklo_1" cx="0" cy="0" r="" 
+  <circle id="konstrucirklo_1" cx="0" cy="0" r="25" 
     style="fill:none; stroke-width:2" class="streketita"/>
-  <circle id="naskanto_1" cx="" cy="" r="4" class="konstrupunkto"/>
+  <circle id="naskanto_1" cx="0" cy="0" r="4" class="konstrupunkto"/>
 
 </svg>
