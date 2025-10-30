@@ -6,11 +6,14 @@ text.punkto {stroke:navy; font-weight: normal; font-size: 14}
 .kadro {stroke: black; stroke-width: 1; fill: none}
 
 circle {stroke-width: 1; stroke: black; fill: none; }
+circle.komplekso {stroke: none; fill: cornflowerblue; }
+circle.punkto {fill: black; }
 
 path {fill:none; stroke-width:2}
 path.akso {stroke:black; stroke-width:2}
 
 line.akso {stroke:black; stroke-width:2}
+line.helplinio {stroke:black; stroke-width:1; stroke-dasharray: 1 3;}
 
 polygon.pinto {stroke: black; stroke-width: 2}
 .kurbo {stroke: black; stroke-width: 4; fill: none}

@@ -50,10 +50,12 @@ class KDiag {
         elm.append(id);
     }
 
+
     constructor(svg,n=3,unuo=10) {
         this.svg = svg;
         this.unuo=unuo;
         this.skaloj(n);
+        this.nombroj = [];
     }
 
     skaloj(n) {
@@ -80,6 +82,49 @@ class KDiag {
             });
             this.svg.append(c)
         };
+    }
+
+    /**
+     * desegnas la nombrojn
+     */
+    desegnu() {
+        for (let n=0; n<this.nombroj.length; n++) {
+            const g = KDiag.e("g", {
+                class: "komplekso"
+            })
+            const k = this.nombroj[n];
+            const c = KDiag.e("circle",{
+                class: "komplekso",
+                cx: k.re*this.unuo,
+                cy: -k.im*this.unuo,
+                r: this.unuo/5
+            });
+            const c1 = KDiag.e("circle",{
+                class: "punkto",
+                cx: k.re*this.unuo,
+                cy: -k.im*this.unuo,
+                r: this.unuo/20
+            });            
+            const l = KDiag.e("line",{
+                class: "helplinio",
+                x2: k.re*this.unuo,
+                y2: -k.im*this.unuo
+            });
+            const im = KDiag.e("line",{
+                class: "helplinio",
+                y1: -k.im*this.unuo,
+                x2: k.re*this.unuo,
+                y2: -k.im*this.unuo
+            });
+            const re = KDiag.e("line",{
+                class: "helplinio",
+                x1: k.re*this.unuo,
+                x2: k.re*this.unuo,
+                y2: -k.im*this.unuo
+            });
+            g.append(re,im,l,c,c1);
+            this.svg.append(g);
+        }
     }
 }
 
