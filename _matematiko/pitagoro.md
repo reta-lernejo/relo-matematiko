@@ -2,7 +2,7 @@
 layout: laborfolio
 title: Teoremo de Pitagoro
 js:
-  - svg-0b
+  - svg-0c
 js-ext: mathjax3
 ---
 

@@ -2,7 +2,7 @@
 layout: laborfolio
 title: Vektoradicio
 js:
-  - svg-0a
+  - svg-0c
   - vektoro-0a
 js-ext: mathjax3
 ---
