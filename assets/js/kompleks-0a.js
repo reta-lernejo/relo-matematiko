@@ -51,10 +51,11 @@ class KDiag {
     }
 
 
-    constructor(svg,n=3,unuo=10) {
+    constructor(svg,n=3,unuo=10,musreago) {
         this.svg = svg;
         this.unuo=unuo;
         this.skaloj(n);
+        this.musreago = musreago;
     }
 
     skaloj(n) {
@@ -209,12 +210,16 @@ class KDiag {
         const newY = this.currentY + dy;
 
         // Metu la nombraĵon en la novan lokon
-        console.log("nova loko: "+newX+","+newY);
+        //console.log("nova loko: "+newX+","+newY);
 
         const re = newX/this.unuo;
         const im = -newY/this.unuo;
         this.movu_al(this.movata,{re, im});
         //currentElement.setAttribute('transform', `translate(${newX}, ${newY})`);
+
+        if (this.musreago) {
+            this.musreago(this.movata,{re,im});
+        }
     }
 
     musmovo_fin(evt) {
