@@ -1,6 +1,6 @@
 ---
 layout: home
-title: Matematiko
+title: Enhavo
 ---
 
 ## Matematiko

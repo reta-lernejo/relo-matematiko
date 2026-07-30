@@ -90,6 +90,12 @@ Kompleksan nobron oni povas doni per ortangulaj koordinatoj $$a, b$$ aŭ per pol
 
 En 1748, la matematikisto *Leonhard Euler*, montris rilaton inter la ekponencialaj kaj la trigonometriaj funkcioj je la konstanto $$e=2,718281828459...$$, kiun por kompleksaj nombroj oni povas esprimi per la eŭlera formulo: $$ r e^{i \phi} = r (\cos{\phi} + i \sin{\phi})$$, el kio sekvas ankaŭ la bela formulo kombinanta tri bazajn matematikajn konstantojn: $$e^{i \pi} = -1$$.
 
+*Rimarko:* En fiziko, kompleksaj nombroj estas tre utilaj por prikalkuli ondojn: la formulo de Eŭlero permesas apliki la regulojn pri eksponencialaj funkcioj, aparte ĉe diferencialado. 
 <!--
-En fiziko, kompleksaj nombroj estas tre utilaj por priskribi ondojn: la absoluta voloro (la radiuso) esprimas la magnitudon, t.e. la absolutan valoron de la amplitudo, dum la angulo $$\phi$$ esprimas la fazon de la ondo.
+Kosinusan ondon oni povas por tio formuli inkluzive de la fazo kiel:
+$$\underline{a}(t) = \underline{\hat{a}}\cdot e^{j\omega t} = \hat{a} \cdot e^{j(\omega t+\phi)} = \hat{a} \cdot (\cos(\omega t + \phi) + j \sin(\omega t+\phi))$$.  
+Oni nomas $$\hat{a}$$ *fazoro*, kiu kombinas amplitudon (reela parto) kaj fazon (imaginara parto).  
 -->
+Por kalkulado pri la impedanco ĉe alternaj kurentoj oni ankaŭ uzas kompleksajn nombrojn: por la rezistanco oni uzas la reelan parton
+kaj por la reaktanco la imaginaran parton: $$Z=R+iX$$.
+
