@@ -55,7 +55,6 @@ class Sekcio {
     }
 
     static malfermu(s_id,fermu_aliajn) {
-        const sekcio = document.getElementById(s_id);
         for (const d of document.querySelectorAll(".sekcio")) {
           //  malfermu la celitan...
           if (d.id == s_id) {

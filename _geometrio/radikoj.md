@@ -1,6 +1,7 @@
 ---
 layout: laborfolio
 title: Diagonaloj kaj radikoj
+next_ch: pitagoro
 js:
     - folio-0c
     - sekcio-0b
@@ -66,10 +67,11 @@ Nu, "*bele, bele*", vi certe diras, sed la ja mezurilo estas ankoraŭ rompita,
 kaj ni ankoraŭ ne scias kiel longa estas la diagonalo. Sed feliĉe la sciencistoj de Babilono jam
 antaŭ pli ol tri mil jaroj eltrovis metodon kiel *eltiri* la radikon el areo de kvadrato.
 
-(Ĉar oni ne scias, kiu en Babilono inventis la metodon, sed la greko Herono iom post Kristo priskribis ĝin en
+(Ĉar oni ne scias, kiu en Babilono inventis la metodon, sed la greko Herono de Aleksandrio 
+kelkajn jarojn post Kristo priskribis ĝin en
 sia libro, oni nomas ĝin ankaŭ *metodo de Herono*.)
 
-Ni komencas per rektangulo kun areo de $$A=1m \cdot 2m = 2m^2$$ kaj premas ĝin tiom longe ĝis ĝi estas
+Ni komencas per rektangulo kun areo de $$A=1m \cdot 2m = 2m^2$$ kaj "knedas" ĝin tiom longe ĝis ĝi estas
 kvadrato:
 
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="-2 -2 204 204" width="50%" height="50%">
@@ -111,6 +113,8 @@ nia serĉata diagonalo.
 <script>
 
 lanĉe(() => {
+    Sekcio.malfermu("la-rompita-mezurilo");
+
     rekomencu();
 
     // post valorŝanĝoj rekomencu la kalkulo
@@ -125,8 +129,6 @@ butone((ago) => {
 });
 
 let hist_datumoj = [];
-let autoInterval = null;
-let isAutoRunning = false;
 
 function preparo() {
     const A = parseFloat(document.getElementById('areo').value.replace(',','.'));
@@ -156,16 +158,14 @@ function sekva() {
     const last = hist_datumoj[hist_datumoj.length - 1];
     const nextN = last.n + 1;
     
-    // Heron Formeln:
-    // x_{n+1} = (x_n + y_n) / 2
-    const nextX = (last.x + last.y) / 2;
-    const nextY = A / nextX;
-    const diff = Math.abs(nextX - nextY);
+    const sekvaX = (last.x + last.y) / 2;
+    const sekvaY = A / sekvaX;
+    const diff = Math.abs(sekvaX - sekvaY);
 
     hist_datumoj.push({
         n: nextN,
-        x: nextX,
-        y: nextY,
+        x: sekvaX,
+        y: sekvaY,
         diff: diff
     });
 
@@ -235,6 +235,12 @@ function rekomencu() {
     </tbody>
 </table>
 
+Nun ankoraŭ mankas la klarigoj pri la aliaj radikojn: $$\sqrt 3$$, $$\sqrt 5$$, $$\sqrt 6$$.
+Pri tiuj ni turnos nin al alia antikva matematikisto, Pitagoro de Samoso, kiu vivis kvincent jarojn antaŭ Kristo.
+
+(Cetere, per tiuj kuboj kun la longo 1 oni povas ricevi plurajn aliajn longojn inter iliaj anguloj, egalaj al radikoj de entjeroj.
+Sed ne eblas ricevi longon $$\sqrt 7$$ laŭ tiu maniero. Tion montras teoremo de tri kvadratoj, 
+pruvita de franca matematikisto *Legendre* je 1997)
 
 
 <!-- Pitagoro, Herono 
