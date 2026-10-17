@@ -1,3 +1,14 @@
+/**
+ * Tiu ĉi kodo faras laborfolion interage. 
+ * Taskojn plenumendajn post ŝargo de la folio difinu per lanĉe().
+ * Aldone, oni povas marki klakeblajn referencojn
+ * per {.ref} kaj formular-elementojn [butono] kaj (x) elekto X () elekto Y
+ * kaj plurelektilojn poer [x] elekto X [] elekto Y.
+ * Por ke tio funkciu vi ankaŭ devas difini reagojn per age(), butone(), elekte(), vd. window.onload()
+ * malsupre.
+ * 
+ */
+
 
 /**
  * Redonas HTML-DOM-elementon 
@@ -142,7 +153,7 @@ window.onload = () => {
                 let tc = e.innerHTML;
                 let html = '', n=0;
                 console.log (e.textContent);
-                // konvertu tekstoj (x?)blabla al <input type="radio"><label for="..."> 
+                // konvertu tekstojn (x?)blabla al <input type="radio"><label for="..."> 
                 // resp. [x?]blabla al <input type="checkbox"><label for="..."> 
                 while ((m = re.exec(tc))) {
                     //debugger;

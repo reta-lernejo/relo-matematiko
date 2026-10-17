@@ -45,6 +45,8 @@ minima:
 collections:
   matematiko:
     output: true
+  geometrio:
+    output: true
   logiko:
     output: true
   kov:
