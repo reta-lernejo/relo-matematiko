@@ -124,22 +124,22 @@ butone((ago) => {
     if (ago.startsWith("herono_re")) rekomencu();
 });
 
-let historyData = [];
+let hist_datumoj = [];
 let autoInterval = null;
 let isAutoRunning = false;
 
 function preparo() {
-    const A = parseFloat(document.getElementById('areo').value);
-    const x0 = parseFloat(document.getElementById('eko').value);
+    const A = parseFloat(document.getElementById('areo').value.replace(',','.'));
+    const x0 = parseFloat(document.getElementById('eko').value.replace(',','.'));
 
     if (isNaN(A) || A < 0 || isNaN(x0) || x0 <= 0) {
         return;
     }
 
-    historyData = [];
+    hist_datumoj = [];
     // Schritt 0
     const y0 = A / x0;
-    historyData.push({
+    hist_datumoj.push({
         n: 0,
         x: x0,
         y: y0,
@@ -151,9 +151,9 @@ function preparo() {
 
 function sekva() {
     const A = parseFloat(document.getElementById('areo').value);
-    if (isNaN(A) || A < 0 || historyData.length === 0) return;
+    if (isNaN(A) || A < 0 || hist_datumoj.length === 0) return;
 
-    const last = historyData[historyData.length - 1];
+    const last = hist_datumoj[hist_datumoj.length - 1];
     const nextN = last.n + 1;
     
     // Heron Formeln:
@@ -162,7 +162,7 @@ function sekva() {
     const nextY = A / nextX;
     const diff = Math.abs(nextX - nextY);
 
-    historyData.push({
+    hist_datumoj.push({
         n: nextN,
         x: nextX,
         y: nextY,
@@ -173,44 +173,34 @@ function sekva() {
 }
 
 function aktualigo() {
-    if (historyData.length === 0) return;
+    if (hist_datumoj.length === 0) return;
 
-    const current = historyData[historyData.length - 1];
-    const A = parseFloat(document.getElementById('areo').value);
+    const current = hist_datumoj[hist_datumoj.length - 1];
+    const A = parseFloat(document.getElementById('areo').value.replace(',','.'));
     const exact = Math.sqrt(A);
 
     // Hero results
-    document.getElementById('x1').textContent = current.x; //.toFixed(10);
-    document.getElementById('y1').textContent = current.y; //.toFixed(10);
-    document.getElementById('pashoj').textContent = current.n;
-    document.getElementById('eraro').textContent = current.diff.toExponential(4);
+    document.getElementById('x1').innerHTML = nombro(current.x,10);
+    document.getElementById('y1').innerHTML = nombro(current.y,10);
+    document.getElementById('pashoj').innerHTML = current.n;
+    document.getElementById('eraro').innerHTML = nombro(current.diff,6);
 
-    // Formula box info
-    /*
-    document.getElementById('currentValuesDisplay').innerHTML = `
-        <div>x<sub>${current.n}</sub> = ${current.x.toFixed(6)}</div>
-        <div>y<sub>${current.n}</sub> = ${current.y.toFixed(6)}</div>
-        <div>x<sub>${current.n+1}</sub> = (${current.x.toFixed(4)} + ${current.y.toFixed(4)}) / 2</div>
-    `;*/
 
-    // Table body
     const tbody = document.getElementById('historio');
     tbody.innerHTML = '';
     
-    // Render from newest to oldest or vice versa? Oldest to newest is nice for history.
-    historyData.forEach((row, index) => {
+    hist_datumoj.forEach((row, index) => {
         const tr = document.createElement('tr');
-        tr.className = index === historyData.length - 1 ? 'bg-indigo-50/50 font-medium' : 'hover:bg-slate-50';
         tr.innerHTML = `
-            <td class="py-2.5 px-4 text-slate-500 font-mono">${row.n}</td>
-            <td class="py-2.5 px-4 font-mono text-slate-900">${row.x.toFixed(9)}</td>
-            <td class="py-2.5 px-4 font-mono text-slate-600">${row.y.toFixed(9)}</td>
-            <td class="py-2.5 px-4 font-mono text-xs text-slate-500">${row.diff.toExponential(3)}</td>
+            <td>${row.n}</td>
+            <td>${nombro(row.x,10)}</td>
+            <td>${nombro(row.y,10)}</td>
+            <td>${nombro(row.diff,6)}</td>
         `;
         tbody.appendChild(tr);
     });
 
-    //document.getElementById('linioj').textContent = `${historyData.length} paŝoj`;
+    //document.getElementById('linioj').textContent = `${hist_datumoj.length} paŝoj`;
 }
 
 function rekomencu() {
